@@ -7,29 +7,34 @@ package gov.nist.fhir.client.ir;
 
 import fhir.util.DeSerialize;
 import fhir.util.FHIRUtil;
-import gov.nist.healthcare.cds.domain.wrapper.ActualForecast;
-import gov.nist.healthcare.cds.domain.wrapper.EngineResponse;
-import gov.nist.healthcare.cds.domain.wrapper.ResponseVaccinationEvent;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+
 import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.eclipse.emf.common.util.EList;
+
 import org.eclipse.emf.ecore.EObject;
+
 import org.hl7.fhir.Bundle;
-import org.hl7.fhir.BundleEntry;
-import org.hl7.fhir.ImmunizationRecommendationRecommendation;
-import org.hl7.fhir.ResourceContainer;
+import org.hl7.fhir.Code;
+import org.hl7.fhir.Date;
+import org.hl7.fhir.FhirFactory;
+import org.hl7.fhir.Id;
+import org.hl7.fhir.Parameters;
+import org.hl7.fhir.ParametersParameter;
 import org.hl7.fhir.impl.BundleImpl;
 
 /**
@@ -38,9 +43,30 @@ import org.hl7.fhir.impl.BundleImpl;
  */
 public class ImmunizationRecommendationClient {
 
+    public static final String PARAMETER_NAME_GENDER = "gender";
+    public static final String PARAMETER_NAME_BIRTH_DATE = "birthDate";
+    
     //TODO: Change from strings to objects
     private static String generateXml(Routing routing, SendingConfig sendingConfig) {
 
+        Parameters parameters = FhirFactory.eINSTANCE.createParameters();
+        Id id = FhirFactory.eINSTANCE.createId();
+        id.setValue(UUID.randomUUID().toString());
+        parameters.setId(id);
+        ParametersParameter genderParameter = FhirFactory.eINSTANCE.createParametersParameter();
+        genderParameter.setName(FHIRUtil.convert(PARAMETER_NAME_GENDER));
+        Code genderValue = FhirFactory.eINSTANCE.createCode();
+        genderValue.setValue(sendingConfig.getGender());
+        genderParameter.setValueCode(genderValue);
+        parameters.getParameter().add(genderParameter);
+        
+        ParametersParameter dobParameter = FhirFactory.eINSTANCE.createParametersParameter();
+        dobParameter.setName(FHIRUtil.convert(PARAMETER_NAME_BIRTH_DATE));
+        Date dobValue = FhirFactory.eINSTANCE.createDate();        
+        dobValue.setValue(FHIRUtil.convert2XMLCalendar(sendingConfig.getBirthdate()));
+        dobParameter.setValueDate(dobValue);
+        
+        
         StringBuilder parameterXml = new StringBuilder();
         parameterXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Parameters xmlns=\"http://hl7.org/fhir\">");
         parameterXml.append("<id value=\"" + UUID.randomUUID().toString() + "\"/>");
