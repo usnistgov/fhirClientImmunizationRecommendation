@@ -87,7 +87,7 @@ public class ImmunizationRecommendationClient {
         parameterXml.append("<valueString value=\"" + routing.getForecastUrl() + "\"/>");
         parameterXml.append("</parameter> ");
         parameterXml.append("<parameter>");
-        parameterXml.append("<name value=\"assesmentDate\"/>");
+        parameterXml.append("<name value=\"assessmentDate\"/>");
         parameterXml.append("<valueDate value=\"" + sendingConfig.getAssessmentDate() + "\"/>");
         //    + "<valueDate value=\"2016-12-01\"/>"
         parameterXml.append("</parameter> ");
@@ -115,15 +115,7 @@ public class ImmunizationRecommendationClient {
             }
             parameterXml.append("</parameter> ");
         }
-        //SERVICE_URL("serviceURL"), SERVICE_TYPE("serviceType"), ASSESMENT_DATE("assesmentDate"), BIRTH_DATE(
-        //"birthDate"), GENDER("gender"), IMMUNIZATION("immunization"), IMMUNIZATIONS("immunizations");
-        /*
-                    parameterXml.append("<parameter>");
-            parameterXml.append("<name value=\"immunizations\" />");
-            parameterXml.append("<resource>");
-            parameterXml.append("</resource>");
-            parameterXml.append("</parameter> ");
-         */
+
 
         parameterXml.append("</Parameters>");
 
