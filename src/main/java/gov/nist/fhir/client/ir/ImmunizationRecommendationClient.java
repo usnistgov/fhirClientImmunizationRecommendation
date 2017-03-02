@@ -102,6 +102,7 @@ public class ImmunizationRecommendationClient {
             ParametersParameter immunizationsParameter = FhirFactory.eINSTANCE.createParametersParameter();
             immunizationsParameter.setName(FHIRUtil.convert(PARAMETER_NAME_IMMUNIZATIONS));
             Iterator<Immunization> iterator = immunizations.iterator();
+            int i = 0;
             while (iterator.hasNext()) {
                 Immunization immunization = iterator.next();
 
@@ -125,18 +126,20 @@ public class ImmunizationRecommendationClient {
                 immCC.getCoding().add(immCoding);
                 fhirImmunization.setVaccineCode(immCC);
                 
-                
-                
+                ParametersParameter currentParam = FhirFactory.eINSTANCE.createParametersParameter();                                
                 ResourceContainer rc = FhirFactory.eINSTANCE.createResourceContainer();
                 rc.setImmunization(fhirImmunization);
-                immunizationsParameter.setResource(rc);
+                
+                currentParam.setResource(rc);
+                immunizationsParameter.getPart().add(currentParam);
+                i++;
             }
             parameters.getParameter().add(immunizationsParameter);
         }
         Serialize seri = new Serialize();
         String xml = seri.it(parameters, "sut.xml");
-        //System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
-/*
+        System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
+
         StringBuilder parameterXml = new StringBuilder();
         parameterXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Parameters xmlns=\"http://hl7.org/fhir\">");
         parameterXml.append("<id value=\"" + UUID.randomUUID().toString() + "\"/>");
@@ -187,7 +190,9 @@ public class ImmunizationRecommendationClient {
         }
 
         parameterXml.append("</Parameters>");
-*/
+
+        System.out.println("OTHER XML HERE!" + parameterXml.toString());
+        
         /*
                  This is what the schema says we should have produced...
         Update: schema was wrong(!)
@@ -214,7 +219,7 @@ public class ImmunizationRecommendationClient {
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
 
-        HttpClient httpClient = HttpClientBuilder.create().build(); //Use this instead                 
+        HttpClient httpClient = HttpClientBuilder.create().build();             
 
         HttpResponse httpResponse = httpClient.execute(request);
         response.setHttpCode(String.valueOf(httpResponse.getStatusLine().getStatusCode()));
