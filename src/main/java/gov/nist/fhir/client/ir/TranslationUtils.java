@@ -5,8 +5,6 @@
  */
 package gov.nist.fhir.client.ir;
 
-import gov.nist.healthcare.cds.domain.Date;
-import gov.nist.healthcare.cds.domain.Evaluation;
 import gov.nist.healthcare.cds.domain.FixedDate;
 import gov.nist.healthcare.cds.domain.wrapper.ActualEvaluation;
 import gov.nist.healthcare.cds.domain.wrapper.ActualForecast;
@@ -15,6 +13,7 @@ import gov.nist.healthcare.cds.domain.wrapper.VaccineRef;
 import gov.nist.healthcare.cds.enumeration.EvaluationStatus;
 import gov.nist.healthcare.cds.enumeration.SerieStatus;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import org.eclipse.emf.common.util.EList;
@@ -38,10 +37,14 @@ public class TranslationUtils {
 
     public static String translateCsdiDateToFhirDate(FixedDate date) {
         SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");
-
         return print.format(date.getDate());
     }
-
+    
+    public static String translateJavaDateToFhirDate(Date date) {
+        SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");
+        return print.format(date);
+    }
+    
     public static FixedDate translateTchDateToFhirDate(String date) {
 
         String year = date.substring(0, 4);
@@ -126,13 +129,6 @@ public class TranslationUtils {
         forecast.setSerieStatus(SerieStatus.valueOf(irr.getForecastStatus().getCoding().get(0).getCode().getValue()));
 
         return forecast;
-    }
-
-    public static void main(String args[]) {
-        Date date = new FixedDate("01/01/2016");
-        System.out.println(date.toString());
-        //System.out.println(TranslationUtils.translateCsdiDateToFhirDate(date));
-
     }
 
 }

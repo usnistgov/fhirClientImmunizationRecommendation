@@ -138,7 +138,7 @@ public class ImmunizationRecommendationClient {
         }
         Serialize seri = new Serialize();
         String xml = seri.it(parameters, "sut.xml");
-        System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
+        //System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
 
         StringBuilder parameterXml = new StringBuilder();
         parameterXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Parameters xmlns=\"http://hl7.org/fhir\">");
@@ -191,7 +191,7 @@ public class ImmunizationRecommendationClient {
 
         parameterXml.append("</Parameters>");
 
-        System.out.println("OTHER XML HERE!" + parameterXml.toString());
+        //System.out.println("OTHER XML HERE!" + parameterXml.toString());
         
         /*
                  This is what the schema says we should have produced...
@@ -214,7 +214,7 @@ public class ImmunizationRecommendationClient {
         Response response = new Response();
         HttpPost request = new HttpPost(routing.getFhirAdapterUrl());
         StringEntity paramsXml = new StringEntity(ImmunizationRecommendationClient.generateXml(routing, sendingConfig));
-        System.out.println(convertStreamToString(paramsXml.getContent()));
+        //System.out.println(convertStreamToString(paramsXml.getContent()));
         request.addHeader("content-type", "application/xml; charset=utf8");
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
@@ -280,9 +280,9 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         DeSerialize deserial = new DeSerialize();
         EObject s1 = deserial.it(url);
 
-        System.out.println(s1.toString() + "!!!" + s1.eResource());
+        //System.out.println(s1.toString() + "!!!" + s1.eResource());
         BundleImpl bundle = (BundleImpl) s1;
-        System.out.println(xml);
+        //System.out.println(xml);
         /*
         EList<BundleEntry> entries = bundle.getEntry();
 
