@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.nist.fhir.client.ir;
 
 import gov.nist.healthcare.cds.domain.wrapper.ActualForecast;
@@ -13,7 +8,6 @@ import gov.nist.healthcare.cds.domain.Patient;
 import gov.nist.healthcare.cds.domain.SoftwareConfig;
 import gov.nist.healthcare.cds.domain.TestCase;
 import gov.nist.healthcare.cds.domain.VaccinationEvent;
-import gov.nist.healthcare.cds.domain.wrapper.ActualEvaluation;
 import gov.nist.healthcare.cds.domain.wrapper.EngineResponse;
 import gov.nist.healthcare.cds.domain.wrapper.ResponseVaccinationEvent;
 import gov.nist.healthcare.cds.enumeration.Gender;
@@ -60,8 +54,6 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         routing.setForecastUrl(config.getEndPoint());
 
         SendingConfig sendingConfig = new SendingConfig();
-        //sendingConfig.setAssessmentDate("2016-12-01T10:57:34+01:00");
-        //sendingConfig.setBirthdate("2016-11-01T10:57:34+01:00");
 
         FixedDate assessmentDate = (FixedDate) tc.getEvalDate();
         FixedDate dob = (FixedDate) tc.getPatient().getDob();
@@ -80,12 +72,12 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 Immunization imm = new Immunization();
 
                 FixedDate immDate = (FixedDate) event.getDate();
-                imm.setDate(TranslationUtils.translateCsdiDateToFhirDate(immDate));                
+                imm.setDate(TranslationUtils.translateCsdiDateToFhirDate(immDate));
                 imm.setPatientReference(tc.getPatient().getId());
                 imm.setVaccineCode(event.getMVX());
                 imms.add(imm);
             }
-        }        
+        }
         sendingConfig.setImmunizationData(imms);
         Bundle result = null;
         try {
@@ -95,33 +87,24 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             ex.printStackTrace();
             return null;
         }
-        
+
         EList<BundleEntry> entries = result.getEntry();
         Iterator<BundleEntry> it = entries.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             BundleEntry entry = it.next();
             ResourceContainer resource = entry.getResource();
             ImmunizationRecommendation ir = resource.getImmunizationRecommendation();
-            if(ir != null) {
+            if (ir != null) {
                 ActualForecast forecast = TranslationUtils.translateImmunizationRecommendationToActualForecast(ir);
                 response.getForecasts().add(forecast);
             }
             org.hl7.fhir.Immunization imm = resource.getImmunization();
-            
-            if(imm != null) {
+            if (imm != null) {
                 ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
                 response.getEvaluatedEvents().add(rve);
             }
-            
-            
-        }
-        ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
-        
-        ActualEvaluation actual = new ActualEvaluation();
-        
-        
-        
-        //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.  
+
+        } 
         return response;
     }
 
@@ -156,37 +139,30 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         tc.setPatient(patient);
         Date evalDate = new FixedDate("01/01/2017");
         tc.setEvalDate(evalDate);
-        
+
         VaccinationEvent ve1 = new VaccinationEvent();
         Set<Event> events = new HashSet<Event>();
         ve1.setMVX("110");
         ve1.setDate(new FixedDate("01/01/2017"));
-        
+
         events.add(ve1);
-        
-//        VaccinationEvent ve2 = new VaccinationEvent();
-        
-    //    ve2.setMVX("116");
-      //  ve2.setDate(new FixedDate("01/01/2017"));
-        
-        //events.add(ve2);
-        
-  //              VaccinationEvent ve3 = new VaccinationEvent();
-        
-//        ve3.setMVX("133");
-//        ve3.setDate(new FixedDate("01/01/2017"));
-        
-        //events.add(ve3);
-              
+
+        VaccinationEvent ve2 = new VaccinationEvent();
+        ve2.setMVX("116");
+        ve2.setDate(new FixedDate("01/01/2017"));
+        events.add(ve2);
+
+        VaccinationEvent ve3 = new VaccinationEvent();
+        ve3.setMVX("133");
+        ve3.setDate(new FixedDate("01/01/2017"));
+        events.add(ve3);
+
         // http://tchforecasttester.org/fv/forecast?evalDate=20170101&evalSchedule=&resultFormat=text&patientDob=20160101&patientSex=F&vaccineDate1=20170101&vaccineCvx1=110
         tc.setEvents(events);
         EngineResponse run = test.run(config, tc);
-System.out.println(run.getForecasts().size());
-     //   List<ActualForecast> actual = run.getForecasts();
-//        actual.get(0).getVaccine();
-  //      actual.get(0);
-    //    List<ResponseVaccinationEvent> rve = run.getEvaluatedEvents();
-     
+        System.out.println(run.getForecasts().size());
+        System.out.println(run.getEvaluatedEvents().size());
+
     }
 
 }
