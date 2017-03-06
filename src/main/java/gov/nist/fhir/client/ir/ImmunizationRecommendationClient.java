@@ -55,7 +55,6 @@ public class ImmunizationRecommendationClient {
     public static final String PARAMETER_NAME_ASSESSMENT_DATE = "assessmentDate";
     public static final String PARAMETER_NAME_IMMUNIZATIONS = "immunizations";
 
-    //TODO: Change from strings to objects
     private static String generateXml(Routing routing, SendingConfig sendingConfig) {
 
         Parameters parameters = FhirFactory.eINSTANCE.createParameters();
@@ -139,7 +138,7 @@ public class ImmunizationRecommendationClient {
         Serialize seri = new Serialize();
         String xml = seri.it(parameters, "sut.xml");
         //System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
-
+/*
         StringBuilder parameterXml = new StringBuilder();
         parameterXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Parameters xmlns=\"http://hl7.org/fhir\">");
         parameterXml.append("<id value=\"" + UUID.randomUUID().toString() + "\"/>");
@@ -192,7 +191,7 @@ public class ImmunizationRecommendationClient {
         parameterXml.append("</Parameters>");
 
         //System.out.println("OTHER XML HERE!" + parameterXml.toString());
-        
+        */
         /*
                  This is what the schema says we should have produced...
         Update: schema was wrong(!)
