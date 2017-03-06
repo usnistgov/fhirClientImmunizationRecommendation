@@ -59,8 +59,9 @@ public class TranslationUtils {
 
         ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
         VaccineRef vaccineRef = new VaccineRef();
-        //TODO: Error checking
-        vaccineRef.setCvx(imm.getVaccineCode().getCoding().get(0).getCode().getValue());
+
+        if(imm.getVaccineCode() != null && imm.getVaccineCode().getCoding() != null && imm.getVaccineCode().getCoding().get(0) != null && imm.getVaccineCode().getCoding().get(0).getCode() != null)
+            vaccineRef.setCvx(imm.getVaccineCode().getCoding().get(0).getCode().getValue());
         rve.setAdministred(vaccineRef);
 
         rve.setDate(TranslationUtils.translateTchDateToFhirDate(imm.getDate().getValue().toString()));
@@ -70,16 +71,17 @@ public class TranslationUtils {
         while (it.hasNext()) {
             ImmunizationVaccinationProtocol ivp = it.next();
             ActualEvaluation ae = new ActualEvaluation();
-            //TODO: Error check
-            String status = ivp.getDoseStatus().getCoding().get(0).getCode().getValue();
+            String status = "";
+            if(ivp.getDoseStatus() != null && ivp.getDoseStatus().getCoding() != null && ivp.getDoseStatus().getCoding().get(0) != null && ivp.getDoseStatus().getCoding().get(0).getCode() != null)
+                status = ivp.getDoseStatus().getCoding().get(0).getCode().getValue();
             if ("Y".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.VALID);
             } else {
                 ae.setStatus(EvaluationStatus.INVALID);
             }
-            VaccineRef vr = new VaccineRef();
-            //TODO: Error checking
-            vr.setCvx(ivp.getSeries().getValue());
+            VaccineRef vr = new VaccineRef();            
+            if(ivp.getSeries() != null)
+                vr.setCvx(ivp.getSeries().getValue());
             ae.setVaccine(vr);
             rve.getEvaluations().add(ae);
         }
@@ -88,26 +90,27 @@ public class TranslationUtils {
 
     public static ActualForecast translateImmunizationRecommendationToActualForecast(ImmunizationRecommendation ir) {
         ActualForecast forecast = new ActualForecast();
-        // TODO: Error checking
+        if(ir.getRecommendation() == null || ir.getRecommendation().get(0) == null) 
+            return forecast;
         ImmunizationRecommendationRecommendation irr = ir.getRecommendation().get(0);
         if (irr.getDoseNumber() != null && irr.getDoseNumber().getValue() != null) {
             forecast.setDoseNumber(irr.getDoseNumber().getValue().toString());
         }
-        //System.out.println("DOSENUMBER = " + irr.getDoseNumber().getValue().toString());
         VaccineRef vaccineRef = new VaccineRef();
-        // TODO: Error checking
-        vaccineRef.setCvx(irr.getVaccineCode().getCoding().get(0).getCode().getValue());
+        if(irr.getVaccineCode() != null && irr.getVaccineCode().getCoding() != null && irr.getVaccineCode().getCoding().get(0) != null && irr.getVaccineCode().getCoding().get(0).getCode() != null)
+            vaccineRef.setCvx(irr.getVaccineCode().getCoding().get(0).getCode().getValue());
         forecast.setVaccine(vaccineRef);
-        EList<ImmunizationRecommendationDateCriterion> dateCriterions = irr.getDateCriterion();
-        // TODO: Error checking
+        EList<ImmunizationRecommendationDateCriterion> dateCriterions = irr.getDateCriterion();       
         Iterator<ImmunizationRecommendationDateCriterion> it = dateCriterions.iterator();
         while (it.hasNext()) {
             ImmunizationRecommendationDateCriterion dateCriterion = it.next();
-            if (dateCriterion.getValue() != null && dateCriterion.getValue().getValue() != null) {
+            if (dateCriterion.getValue() != null && dateCriterion.getValue().getValue() != null) {                
                 FixedDate date = TranslationUtils.translateTchDateToFhirDate(dateCriterion.getValue().getValue().toString());
 
                 // TODO: Error checking
-                String status = dateCriterion.getCode().getCoding().get(0).getCode().getValue();
+                String status = "";
+                if(dateCriterion.getCode() != null && dateCriterion.getCode().getCoding() != null && dateCriterion.getCode().getCoding().get(0) != null && dateCriterion.getCode().getCoding().get(0).getCode() != null)
+                    status = dateCriterion.getCode().getCoding().get(0).getCode().getValue();
                 switch (status) {
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_DUE:
                         forecast.setRecommended(date);
@@ -125,9 +128,8 @@ public class TranslationUtils {
 
             }
         }
-        //TODO: Error checking
-        forecast.setSerieStatus(SerieStatus.valueOf(irr.getForecastStatus().getCoding().get(0).getCode().getValue()));
-
+        if (irr.getForecastStatus() != null && irr.getForecastStatus().getCoding() != null && irr.getForecastStatus().getCoding().get(0) != null && irr.getForecastStatus().getCoding().get(0).getCode() != null)
+            forecast.setSerieStatus(SerieStatus.valueOf(irr.getForecastStatus().getCoding().get(0).getCode().getValue()));
         return forecast;
     }
 
