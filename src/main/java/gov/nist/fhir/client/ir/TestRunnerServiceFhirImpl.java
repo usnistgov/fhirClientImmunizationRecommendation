@@ -15,6 +15,9 @@ import gov.nist.healthcare.cds.domain.wrapper.VaccineRef;
 import gov.nist.healthcare.cds.enumeration.Gender;
 import gov.nist.healthcare.cds.service.TestRunnerService;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -89,10 +92,14 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         Bundle result = null;
         try {
             result = (Bundle) irc.getImmunizationRecommendation(routing, sendingConfig);
-        } catch (IOException ex) {
+        } catch (IOException ex) { 
             Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-            return null;
+        } catch (KeyStoreException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KeyManagementException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         Serialize serial = new Serialize();
@@ -133,7 +140,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
     }
 
     public static void main(String[] args) {
-        TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
+     //   TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
+        TestRunnerService test = new TestRunnerServiceFhirImpl("https://localhost:8443/forecast/ImmunizationRecommendations");
 
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();

@@ -15,6 +15,9 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,8 +27,13 @@ import java.util.UUID;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -205,10 +213,13 @@ public class ImmunizationRecommendationClient {
                     + "</Immunization>"
          */
         //return parameterXml.toString();
+        
+    //    System.out.println(xml);
+        
         return xml;
     }
 
-    private static Response sendImmunizationInformation(Routing routing, SendingConfig sendingConfig) throws UnsupportedEncodingException, IOException {
+    private static Response sendImmunizationInformation(Routing routing, SendingConfig sendingConfig) throws UnsupportedEncodingException, IOException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
 
         Response response = new Response();
         HttpPost request = new HttpPost(routing.getFhirAdapterUrl());
@@ -218,7 +229,15 @@ public class ImmunizationRecommendationClient {
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
 
-        HttpClient httpClient = HttpClientBuilder.create().build();             
+        // HttpClient httpClient = HttpClientBuilder.create().build();             
+        HttpClient httpClient = HttpClients.custom()
+            .setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom()
+                    .loadTrustMaterial(null, new TrustSelfSignedStrategy())
+                    .build()
+                )
+            ).build();
+        
+        
 
         HttpResponse httpResponse = httpClient.execute(request);
         response.setHttpCode(String.valueOf(httpResponse.getStatusLine().getStatusCode()));
@@ -254,7 +273,7 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         return s.hasNext() ? s.next() : "";
     }
 
-    public Bundle getImmunizationRecommendation(Routing routing, SendingConfig sendingConfig) throws IOException {
+    public Bundle getImmunizationRecommendation(Routing routing, SendingConfig sendingConfig) throws IOException, UnsupportedEncodingException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
 
         //EngineResponse engineResponse = new EngineResponse();
         //engineResponse.setForecasts(new ArrayList<ActualForecast>());
@@ -343,11 +362,11 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, UnsupportedEncodingException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
 
         ImmunizationRecommendationClient irc = new ImmunizationRecommendationClient();
         Routing routing = new Routing();
-        routing.setFhirAdapterUrl("http://localhost:8080/forecast/ImmunizationRecommendations");
+        routing.setFhirAdapterUrl("https://localhost:8443/forecast/ImmunizationRecommendations");
         routing.setForecastType("TCH");
         routing.setForecastUrl("http://tchforecasttester.org/fv/forecast");
 
@@ -373,8 +392,40 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
 
         sendingConfig.setImmunizationData(imms);
 
-        irc.getImmunizationRecommendation(routing, sendingConfig);
-
+        Bundle bundle = irc.getImmunizationRecommendation(routing, sendingConfig);
+        Serialize ser = new Serialize();
+        
+        System.out.println(ser.it(bundle,"*.xml"));
+        
+        /*
+        org.hl7.fhir.ImmunizationRecommendation ir = FhirFactory.eINSTANCE.createImmunizationRecommendation();
+        Id id = FhirFactory.eINSTANCE.createId();
+        id.setValue(UUID.randomUUID().toString());
+        ir.setId(id);
+        
+        Parameters params = FhirFactory.eINSTANCE.createParameters();        
+        ParametersParameter param = FhirFactory.eINSTANCE.createParametersParameter();
+        params.getParameter().add(param);
+        param.setId("HERE");
+        org.hl7.fhir.String name = FhirFactory.eINSTANCE.createString();
+        name.setValue("name");
+        param.setName(name);
+        param.setValueId(id);
+        ResourceContainer rc = FhirFactory.eINSTANCE.createResourceContainer();
+        rc.setImmunizationRecommendation(ir);
+        param.setResource(rc);
+        
+        
+        Serialize ser = new Serialize();
+        String irString = ser.it(ir, "*.xml");
+        String paramsString = ser.it(params,"*.xml");
+        String paramString = ser.it(param, "*.xml");
+        
+        System.out.println(irString);
+        System.out.println(paramsString);
+        System.out.println(paramString);
+        */
+        
     }
 
 }
