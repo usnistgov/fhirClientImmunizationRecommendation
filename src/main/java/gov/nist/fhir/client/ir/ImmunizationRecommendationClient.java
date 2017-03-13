@@ -12,6 +12,7 @@ import fhir.util.Serialize;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
 import java.net.URL;
@@ -23,6 +24,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -36,6 +40,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl;
 
 import org.hl7.fhir.Bundle;
 import org.hl7.fhir.Code;
@@ -47,6 +52,7 @@ import org.hl7.fhir.FhirFactory;
 import org.hl7.fhir.Id;
 import org.hl7.fhir.Parameters;
 import org.hl7.fhir.ParametersParameter;
+import org.hl7.fhir.Patient;
 import org.hl7.fhir.ResourceContainer;
 import org.hl7.fhir.impl.BundleImpl;
 
@@ -62,9 +68,14 @@ public class ImmunizationRecommendationClient {
     public static final String PARAMETER_NAME_SERVICE_URL = "serviceURL";
     public static final String PARAMETER_NAME_ASSESSMENT_DATE = "assessmentDate";
     public static final String PARAMETER_NAME_IMMUNIZATIONS = "immunizations";
+    public static final String PARAMETER_NAME_PATIENT = "patient";
 
     private static String generateXml(Routing routing, SendingConfig sendingConfig) {
 
+        
+        
+        
+        
         Parameters parameters = FhirFactory.eINSTANCE.createParameters();
         Id id = FhirFactory.eINSTANCE.createId();
         id.setValue(UUID.randomUUID().toString());
@@ -82,7 +93,19 @@ public class ImmunizationRecommendationClient {
         dobValue.setValue(FHIRUtil.convert2XMLCalendar(sendingConfig.getBirthdate()));
         dobParameter.setValueDate(dobValue);
         parameters.getParameter().add(dobParameter);
-
+/*
+        // Will swap in when ready
+        ParametersParameter patientParameter = FhirFactory.eINSTANCE.createParametersParameter();
+        patientParameter.setName(FHIRUtil.convert(PARAMETER_NAME_PATIENT));
+        Patient patient = FhirFactory.eINSTANCE.createPatient();
+        Code genderCode = FhirFactory.eINSTANCE.createCode();
+        genderCode.setValue(sendingConfig.getGender());
+        patient.setGender(genderCode);
+        patient.setBirthDate(dobValue);
+        ResourceContainer patientRC = FhirFactory.eINSTANCE.createResourceContainer();
+        patientRC.setPatient(patient);
+        patientParameter.setResource(patientRC);        
+  */      
         ParametersParameter serviceTypeParameter = FhirFactory.eINSTANCE.createParametersParameter();
         serviceTypeParameter.setName(FHIRUtil.convert(PARAMETER_NAME_SERVICE_TYPE));
         org.hl7.fhir.String serviceTypeString = FhirFactory.eINSTANCE.createString();
@@ -145,6 +168,9 @@ public class ImmunizationRecommendationClient {
         }
         Serialize seri = new Serialize();
         String xml = seri.it(parameters, "sut.xml");
+        
+ //       System.out.println(seri.it(patientParameter, "sut.xml"));
+        
         //System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
 /*
         StringBuilder parameterXml = new StringBuilder();
@@ -223,12 +249,15 @@ public class ImmunizationRecommendationClient {
 
         Response response = new Response();
         HttpPost request = new HttpPost(routing.getFhirAdapterUrl());
-        StringEntity paramsXml = new StringEntity(ImmunizationRecommendationClient.generateXml(routing, sendingConfig));
+        String outgoingXml = ImmunizationRecommendationClient.generateXml(routing, sendingConfig);
+        StringEntity paramsXml = new StringEntity(outgoingXml);
         //System.out.println(convertStreamToString(paramsXml.getContent()));
         request.addHeader("content-type", "application/xml; charset=utf8");
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
 
+        System.out.println("GOING OUT!" + outgoingXml);
+        
         // HttpClient httpClient = HttpClientBuilder.create().build();             
         HttpClient httpClient = HttpClients.custom()
             .setSSLSocketFactory(new SSLConnectionSocketFactory(SSLContexts.custom()
@@ -243,7 +272,7 @@ public class ImmunizationRecommendationClient {
         response.setHttpCode(String.valueOf(httpResponse.getStatusLine().getStatusCode()));
 
         //TODO: Improve this.
-        String body = convertStreamToString(httpResponse.getEntity().getContent());
+        String body = convertStreamToString(httpResponse.getEntity().getContent());        
         String xml = body.substring(body.indexOf("<"));
         response.setPayload(xml);
 
@@ -282,7 +311,10 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         //      Collection<Immunization> immunizations = new ArrayList<Immunization>();
         Response response = ImmunizationRecommendationClient.sendImmunizationInformation(routing, sendingConfig);
 
+        
+        //TODO: This workaround is no longer needed.  Fix it.
         String xml = response.getPayload();
+        /*
         String filename = UUID.randomUUID().toString();
         File tempFile = new File(filename + ".xml");
         PrintWriter writer = new PrintWriter(tempFile);
@@ -295,9 +327,13 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         if (path.startsWith("file:")) {
             path = path.substring(5);
         }
+        */
         DeSerialize deserial = new DeSerialize();
-        EObject s1 = deserial.it(url);
-
+        //EObject s1 = deserial.it(url);
+        
+        
+        
+        EObject s1 = deserial.it(new StringReader(xml), "*.xml");
         //System.out.println(s1.toString() + "!!!" + s1.eResource());
         BundleImpl bundle = (BundleImpl) s1;
         //System.out.println(xml);
@@ -355,7 +391,7 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
             }
         }
          */
-        tempFile.delete();
+     //   tempFile.delete();
         //return recommendations;
         return bundle;
         //return engineResponse;
@@ -393,11 +429,11 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         sendingConfig.setImmunizationData(imms);
 
         Bundle bundle = irc.getImmunizationRecommendation(routing, sendingConfig);
-        Serialize ser = new Serialize();
+     //   Serialize ser = new Serialize();
         
-        System.out.println(ser.it(bundle,"*.xml"));
+        // System.out.println(ser.it(bundle,"*.xml"));
         
-        /*
+        
         org.hl7.fhir.ImmunizationRecommendation ir = FhirFactory.eINSTANCE.createImmunizationRecommendation();
         Id id = FhirFactory.eINSTANCE.createId();
         id.setValue(UUID.randomUUID().toString());
@@ -405,7 +441,8 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         
         Parameters params = FhirFactory.eINSTANCE.createParameters();        
         ParametersParameter param = FhirFactory.eINSTANCE.createParametersParameter();
-        params.getParameter().add(param);
+        params.getParameter().add(param);        
+        ParametersParameter param2 = params.getParameter().get(0);
         param.setId("HERE");
         org.hl7.fhir.String name = FhirFactory.eINSTANCE.createString();
         name.setValue("name");
@@ -419,12 +456,23 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         Serialize ser = new Serialize();
         String irString = ser.it(ir, "*.xml");
         String paramsString = ser.it(params,"*.xml");
+     //   String paramsString;
+        //try {
+            paramsString = ser.it(params,"*.xml"); //ser.xmlFromParameter(params);
         String paramString = ser.it(param, "*.xml");
+        String param2String = ser.it(param2, "*.xml");
         
-        System.out.println(irString);
+        
+       // XMLHelperImpl.saveString(options, contents, irString, helper)
+        
+        //System.out.println(irString);
         System.out.println(paramsString);
         System.out.println(paramString);
-        */
+        System.out.println(param2String);
+        //} catch (ParserConfigurationException ex) {
+//            Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+  //      }
+        
         
     }
 
