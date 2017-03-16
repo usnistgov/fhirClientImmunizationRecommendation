@@ -33,6 +33,9 @@ import org.hl7.fhir.Bundle;
 import org.hl7.fhir.BundleEntry;
 import org.hl7.fhir.ResourceContainer;
 import org.hl7.fhir.ImmunizationRecommendation;
+import org.hl7.fhir.ImmunizationRecommendationRecommendation;
+import org.hl7.fhir.Parameters;
+import org.hl7.fhir.ParametersParameter;
 
 /**
  *
@@ -41,9 +44,16 @@ import org.hl7.fhir.ImmunizationRecommendation;
 public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
     private String adapterUrl = null;
+    private boolean useAdapter = false;
+
+    public TestRunnerServiceFhirImpl() {
+        this.setUseAdapter(false);
+
+    }
 
     public TestRunnerServiceFhirImpl(String adapterUrl) {
         this.setAdapterUrl(adapterUrl);
+        this.setUseAdapter(true);
     }
 
     @Override
@@ -63,7 +73,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
         SendingConfig sendingConfig = new SendingConfig();
 
-        Date assessmentDate = tc.getEvaluationDate(); 
+        Date assessmentDate = tc.getEvaluationDate();
         Date dob = tc.getDateOfBirth();
 
         sendingConfig.setAssessmentDate(TranslationUtils.translateJavaDateToFhirDate(assessmentDate));
@@ -89,39 +99,75 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             }
         }
         sendingConfig.setImmunizationData(imms);
-        Bundle result = null;
-        try {
-            result = (Bundle) irc.getImmunizationRecommendation(routing, sendingConfig);
-        } catch (IOException ex) { 
-            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KeyStoreException ex) {
-            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (KeyManagementException ex) {
-            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+        if (useAdapter) {
+            Bundle result = null;
+            try {
+                result = (Bundle) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter);
+            } catch (IOException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (KeyStoreException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (KeyManagementException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            Serialize serial = new Serialize();
+            response.setResponse(serial.it(result, "sut.xml"));
+
+            EList<BundleEntry> entries = result.getEntry();
+            Iterator<BundleEntry> it = entries.iterator();
+            while (it.hasNext()) {
+                BundleEntry entry = it.next();
+                ResourceContainer resource = entry.getResource();
+                ImmunizationRecommendation ir = resource.getImmunizationRecommendation();
+                if (ir != null) {
+                    ActualForecast forecast = TranslationUtils.translateImmunizationRecommendationToActualForecast(ir);
+                    response.getForecasts().add(forecast);
+                }
+                org.hl7.fhir.Immunization imm = resource.getImmunization();
+                if (imm != null) {
+                    ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
+                    response.getEvents().add(rve);
+                }
+
+            }
+        } else {
+
+            Parameters parameters = null;
+            try {
+                parameters = (Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter);
+            } catch (IOException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (KeyStoreException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (KeyManagementException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            Serialize serial = new Serialize();
+            response.setResponse(serial.it(parameters, "sut.xml"));
+            // TODO: Error checking
+            ParametersParameter parameter = parameters.getParameter().get(0);
+            // TODO: Error checking
+            ImmunizationRecommendation ir = parameter.getResource().getImmunizationRecommendation();
+            EList<ImmunizationRecommendationRecommendation> irrs = ir.getRecommendation();
+            Iterator<ImmunizationRecommendationRecommendation> it = irrs.iterator();
+            while(it.hasNext()) {
+                ImmunizationRecommendationRecommendation irr = it.next();
+              //  if(TranslationUtils.doesRecommendationHaveDateCriterion(irr)) {
+                    ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
+                    response.getForecasts().add(af);
+//                } else {
+  //                  ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationRecommendationRecommendationToResponseVaccinationEvent(irr);
+    //                response.getEvents().add(rve);
+      //          }
+                    
+            }
+            
         }
-
-        Serialize serial = new Serialize();
-        response.setResponse(serial.it(result, "sut.xml"));
-        
-        EList<BundleEntry> entries = result.getEntry();
-        Iterator<BundleEntry> it = entries.iterator();
-        while (it.hasNext()) {
-            BundleEntry entry = it.next();
-            ResourceContainer resource = entry.getResource();
-            ImmunizationRecommendation ir = resource.getImmunizationRecommendation();
-            if (ir != null) {
-                ActualForecast forecast = TranslationUtils.translateImmunizationRecommendationToActualForecast(ir);
-                response.getForecasts().add(forecast);
-            }
-            org.hl7.fhir.Immunization imm = resource.getImmunization();
-            if (imm != null) {
-                ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
-                response.getEvents().add(rve);
-            }
-
-        } 
         return response;
     }
 
@@ -140,39 +186,34 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
     }
 
     public static void main(String[] args) {
-     //   TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
-        TestRunnerService test = new TestRunnerServiceFhirImpl("https://localhost:8443/forecast/ImmunizationRecommendations");
-
+        //   TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
+        //   TestRunnerService test = new TestRunnerServiceFhirImpl("https://localhost:8443/forecast/ImmunizationRecommendations");
+        TestRunnerService test = new TestRunnerServiceFhirImpl();
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();
 
-        config.setUser("TCH");
-        config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+        //config.setUser("TCH");
+        //config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+        config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
 
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
-
         //patient.setDob(dob);
         //patient.setGender(Gender.F);
         //tc.setPatient(patient);        
         tc.setGender(Gender.F);
-        
+
         Calendar evalCal = Calendar.getInstance();
         evalCal.set(2017, 1, 1);
         Date evalDate = evalCal.getTime();
-        
+
         Calendar dobCal = Calendar.getInstance();
-        dobCal.set(2016, 1, 1);
+        dobCal.set(2009, 8, 9);
         Date dobDate = dobCal.getTime();
-                
+
         tc.setEvaluationDate(evalDate);
         tc.setDateOfBirth(dobDate);
 
-        Calendar immCal = Calendar.getInstance();
-        immCal.set(2017, 1, 1);
-        Date immDate = immCal.getTime();
-        
-        
         /*
         VaccinationEvent ve1 = new VaccinationEvent();
         Set<Event> events = new HashSet<Event>();
@@ -190,29 +231,61 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         ve3.setMVX("133");
         ve3.setDate(new FixedDate("01/01/2017"));
         events.add(ve3);
-*/
+         */
         //List<VaccinationEventPayLoad> vaccinationEvents = new ArrayList<VaccinationEventPayLoad>();
+        Calendar immCal1 = Calendar.getInstance();
+        immCal1.set(2009, 10, 9);
+        Date immDate1 = immCal1.getTime();
+
+        Calendar immCal2 = Calendar.getInstance();
+        immCal2.set(2009, 12, 9);
+        Date immDate2 = immCal2.getTime();
+
+        Calendar immCal3 = Calendar.getInstance();
+        immCal3.set(2010, 4, 9);
+        Date immDate3 = immCal3.getTime();
+
+        Calendar immCal4 = Calendar.getInstance();
+        immCal4.set(2010, 10, 5);
+        Date immDate4 = immCal4.getTime();
+
         VaccineRef vr1 = new VaccineRef();
         vr1.setCvx("110");
-        tc.addImmunization(vr1, immDate);
-        
+        tc.addImmunization(vr1, immDate1);
+/*
         VaccineRef vr2 = new VaccineRef();
-        vr2.setCvx("116");
-        tc.addImmunization(vr2, immDate);
-        
+        vr2.setCvx("110");
+        tc.addImmunization(vr2, immDate2);
+
         VaccineRef vr3 = new VaccineRef();
-        vr3.setCvx("133");
-        tc.addImmunization(vr3, immDate);
-        
-                        
+        vr3.setCvx("110");
+        tc.addImmunization(vr3, immDate3);
+
+        VaccineRef vr4 = new VaccineRef();
+        vr4.setCvx("110");
+        tc.addImmunization(vr4, immDate4);
+*/
         // http://tchforecasttester.org/fv/forecast?evalDate=20170101&evalSchedule=&resultFormat=text&patientDob=20160101&patientSex=F&vaccineDate1=20170101&vaccineCvx1=110
         //tc.setEvents(events);
         //tc.setImmunizations(events);
         EngineResponse run = test.run(config, tc);
-        System.out.println(run.getForecasts().size());
-        //System.out.println(run.getEvaluatedEvents().size());
-        System.out.println(run.getEvents().size());        
-        System.out.println(run.getResponse());
+        System.out.println(run.getForecasts().size());        
+        System.out.println(run.getEvents().size());
+        //System.out.println(run.getResponse());
+    }
+
+    /**
+     * @return the useAdapter
+     */
+    public boolean isUseAdapter() {
+        return useAdapter;
+    }
+
+    /**
+     * @param useAdapter the useAdapter to set
+     */
+    public void setUseAdapter(boolean useAdapter) {
+        this.useAdapter = useAdapter;
     }
 
 }
