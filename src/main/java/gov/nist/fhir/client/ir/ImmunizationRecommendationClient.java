@@ -317,7 +317,7 @@ public class ImmunizationRecommendationClient {
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
 
-        System.out.println("GOING OUT!" + outgoingXml);
+        //System.out.println("GOING OUT!" + outgoingXml);
 
         // HttpClient httpClient = HttpClientBuilder.create().build();             
         HttpClient httpClient = HttpClients.custom()
@@ -333,7 +333,7 @@ public class ImmunizationRecommendationClient {
         //TODO: Improve this.
         String body = convertStreamToString(httpResponse.getEntity().getContent());
 
-        System.out.println("COMING BACK!!!! " + body);
+        //System.out.println("COMING BACK!!!! " + body);
 
         String xml = body.substring(body.indexOf("<"));
         response.setPayload(xml);
@@ -371,7 +371,7 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         //TODO: This workaround is no longer needed.  Fix it.
         String xml = response.getPayload();
 
-        System.out.println("Coming back!!!" + xml);
+      //  System.out.println("Coming back!!!" + xml);
 
         DeSerialize deserial = new DeSerialize();
         EObject s1 = deserial.it(new StringReader(xml), "*.xml");
