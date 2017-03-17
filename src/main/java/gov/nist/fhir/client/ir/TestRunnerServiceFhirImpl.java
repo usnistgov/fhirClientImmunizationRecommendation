@@ -12,6 +12,7 @@ import gov.nist.healthcare.cds.domain.wrapper.ResponseVaccinationEvent;
 import gov.nist.healthcare.cds.domain.wrapper.TestCasePayLoad;
 import gov.nist.healthcare.cds.domain.wrapper.TestCasePayLoad.VaccinationEventPayLoad;
 import gov.nist.healthcare.cds.domain.wrapper.VaccineRef;
+import gov.nist.healthcare.cds.enumeration.FHIRAdapter;
 import gov.nist.healthcare.cds.enumeration.Gender;
 import gov.nist.healthcare.cds.service.TestRunnerService;
 import java.io.IOException;
@@ -47,19 +48,23 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
     private boolean useAdapter = false;
 
     public TestRunnerServiceFhirImpl() {
-        this.setUseAdapter(false);
 
     }
 
     public TestRunnerServiceFhirImpl(String adapterUrl) {
         this.setAdapterUrl(adapterUrl);
-        this.setUseAdapter(true);
     }
 
     @Override
     public EngineResponse run(SoftwareConfig config, TestCasePayLoad tc) {
 
         EngineResponse response = new EngineResponse();
+        if(config.getConnector().equals(FHIRAdapter.FHIR)){
+        	this.setUseAdapter(false);
+        }
+        else {
+        	this.setUseAdapter(true);
+        }
         List<ActualForecast> forecasts = new ArrayList<>();
         response.setForecasts(forecasts);
         List<ResponseVaccinationEvent> evaluatedEvents = new ArrayList<>();
@@ -68,7 +73,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         ImmunizationRecommendationClient irc = new ImmunizationRecommendationClient();
         Routing routing = new Routing();
         routing.setFhirAdapterUrl(this.getAdapterUrl());
-        routing.setForecastType(config.getUser());
+        routing.setForecastType(config.getConnector().toString());
         routing.setForecastUrl(config.getEndPoint());
 
         SendingConfig sendingConfig = new SendingConfig();
