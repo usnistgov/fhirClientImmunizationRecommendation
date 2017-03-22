@@ -44,7 +44,7 @@ public class TranslationUtils {
         SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");
         return print.format(date);
     }
-
+ 
     public static FixedDate translateTchDateToFhirDate(String date) {
 
         String year = date.substring(0, 4);
