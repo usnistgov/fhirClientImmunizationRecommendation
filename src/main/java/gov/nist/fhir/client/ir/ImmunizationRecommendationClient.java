@@ -68,7 +68,7 @@ public class ImmunizationRecommendationClient {
     public static final String PARAMETER_NAME_SERVICE_TYPE = "serviceType";
     public static final String PARAMETER_NAME_SERVICE_URL = "serviceURL";
     public static final String PARAMETER_NAME_ASSESSMENT_DATE = "assessmentDate";
-    public static final String PARAMETER_NAME_IMMUNIZATIONS = "immunizations";
+    public static final String PARAMETER_NAME_IMMUNIZATIONS = "Immunizations";
     public static final String PARAMETER_NAME_PATIENT = "patient";
 
     private static String generateXml(Routing routing, SendingConfig sendingConfig, boolean useAdapter) {
@@ -229,7 +229,7 @@ public class ImmunizationRecommendationClient {
         String xml = seri.it(parameters, "sut.xml");
 
         //       System.out.println(seri.it(patientParameter, "sut.xml"));
-        //System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
+        System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
 /*
         StringBuilder parameterXml = new StringBuilder();
         parameterXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Parameters xmlns=\"http://hl7.org/fhir\">");
@@ -333,7 +333,7 @@ public class ImmunizationRecommendationClient {
         //TODO: Improve this.
         String body = convertStreamToString(httpResponse.getEntity().getContent());
 
-        //System.out.println("COMING BACK!!!! " + body);
+        System.out.println("COMING BACK!!!! " + body);
 
         String xml = body.substring(body.indexOf("<"));
         response.setPayload(xml);
