@@ -166,7 +166,19 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
       //          }
                     
             }
-            
+            EList<ResourceContainer> containeds = ir.getContained();
+            //TODO: Error checking
+            Iterator<ResourceContainer> itRc = containeds.iterator();
+            while(itRc.hasNext()) {
+                
+                ResourceContainer rc = itRc.next();
+                org.hl7.fhir.Immunization imm = rc.getImmunization();                              
+                if (imm != null) {
+                    ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
+                    response.getEvents().add(rve);
+                }
+                
+            }
         }
         return response;
     }
@@ -187,14 +199,14 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
     public static void main(String[] args) {
         //   TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
-        //   TestRunnerService test = new TestRunnerServiceFhirImpl("https://localhost:8443/forecast/ImmunizationRecommendations");
-        TestRunnerService test = new TestRunnerServiceFhirImpl();
+           TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:8443/forecast/ImmunizationRecommendations");
+        //TestRunnerService test = new TestRunnerServiceFhirImpl();
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();
 
-        //config.setUser("TCH");
-        //config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-        config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
+        config.setUser("TCH");
+        config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+        //config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
 
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
