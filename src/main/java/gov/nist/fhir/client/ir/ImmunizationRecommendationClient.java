@@ -68,7 +68,8 @@ public class ImmunizationRecommendationClient {
     public static final String PARAMETER_NAME_SERVICE_TYPE = "serviceType";
     public static final String PARAMETER_NAME_SERVICE_URL = "serviceURL";
     public static final String PARAMETER_NAME_ASSESSMENT_DATE = "assessmentDate";
-    public static final String PARAMETER_NAME_IMMUNIZATIONS = "Immunizations";
+    public static final String PARAMETER_NAME_IMMUNIZATION = "Immunization";
+    public static final String PARAMETER_NAME_IMMUNIZATION_ADAPTER = "Immunizations";    
     public static final String PARAMETER_NAME_PATIENT = "patient";
 
     private static String generateXml(Routing routing, SendingConfig sendingConfig, boolean useAdapter) {
@@ -140,7 +141,7 @@ public class ImmunizationRecommendationClient {
             Collection<Immunization> immunizations = sendingConfig.getImmunizationData();
             if (immunizations != null) {
                 ParametersParameter immunizationsParameter = FhirFactory.eINSTANCE.createParametersParameter();
-                immunizationsParameter.setName(FHIRUtil.convert(PARAMETER_NAME_IMMUNIZATIONS));
+                immunizationsParameter.setName(FHIRUtil.convert(PARAMETER_NAME_IMMUNIZATION_ADAPTER));
                 Iterator<Immunization> iterator = immunizations.iterator();
                 int i = 0;
                 while (iterator.hasNext()) {
@@ -183,7 +184,7 @@ public class ImmunizationRecommendationClient {
                 while(it.hasNext()) {
                     Immunization immunization = it.next();
                     ParametersParameter immParam = FhirFactory.eINSTANCE.createParametersParameter();
-                    immParam.setName(FHIRUtil.convert(PARAMETER_NAME_IMMUNIZATIONS));
+                    immParam.setName(FHIRUtil.convert(PARAMETER_NAME_IMMUNIZATION));
                     ResourceContainer resource = FhirFactory.eINSTANCE.createResourceContainer();
                     org.hl7.fhir.Immunization fhirImmunization = FhirFactory.eINSTANCE.createImmunization();
                     Id immunizationId = FhirFactory.eINSTANCE.createId();
