@@ -27,6 +27,7 @@
             <artifactId>fhirForecast</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>gov.nist.healthcare.cds</groupId>
             <artifactId>cds-base-service</artifactId>
@@ -35,6 +36,17 @@
         <dependency>
             <groupId>gov.nist.healthcare.cds</groupId>
             <artifactId>cds-base-domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>gov.nist.healthcare.cds</groupId>
+            <artifactId>cds-base-domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.nist.healthcare.cds</groupId>
+            <artifactId>cds-base-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
