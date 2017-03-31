@@ -122,9 +122,10 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+            response.setRequest(ImmunizationRecommendationClient.generateXml(routing, sendingConfig, useAdapter));
             Serialize serial = new Serialize();
             response.setResponse(serial.it(result, "sut.xml"));
-
+            
             EList<BundleEntry> entries = result.getEntry();
             Iterator<BundleEntry> it = entries.iterator();
             while (it.hasNext()) {

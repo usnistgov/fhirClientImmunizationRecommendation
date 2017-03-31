@@ -83,7 +83,7 @@ public class ImmunizationRecommendationClient {
     public static final String PARAMETER_NAME_IMMUNIZATION_ADAPTER = "Immunizations";
     public static final String PARAMETER_NAME_PATIENT = "patient";
 
-    private static String generateXml(Routing routing, SendingConfig sendingConfig, boolean useAdapter) {
+    public static String generateXml(Routing routing, SendingConfig sendingConfig, boolean useAdapter) {
 
         Parameters parameters = FhirFactory.eINSTANCE.createParameters();
         Id id = FhirFactory.eINSTANCE.createId();
