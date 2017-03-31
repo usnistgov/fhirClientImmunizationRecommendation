@@ -27,7 +27,6 @@
             <artifactId>fhirForecast</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--
         <dependency>
             <groupId>gov.nist.healthcare.cds</groupId>
             <artifactId>cds-base-service</artifactId>
@@ -38,17 +37,20 @@
             <artifactId>cds-base-domain</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        -->
-        <dependency>
-            <groupId>gov.nist.healthcare.cds</groupId>
-            <artifactId>cds-base-domain</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>gov.nist.healthcare.cds</groupId>
-            <artifactId>cds-base-service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+        
+        <!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-base -->
+<dependency>
+    <groupId>ca.uhn.hapi.fhir</groupId>
+    <artifactId>hapi-fhir-base</artifactId>
+    <version>2.3</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-structures-dstu3 -->
+<dependency>
+    <groupId>ca.uhn.hapi.fhir</groupId>
+    <artifactId>hapi-fhir-structures-dstu3</artifactId>
+    <version>2.3</version>
+</dependency>
+
     </dependencies>
     
 </project>

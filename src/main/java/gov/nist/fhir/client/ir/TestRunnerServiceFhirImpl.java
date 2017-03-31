@@ -1,5 +1,6 @@
 package gov.nist.fhir.client.ir;
 
+import ca.uhn.fhir.context.FhirContext;
 import fhir.util.Serialize;
 import gov.nist.healthcare.cds.domain.wrapper.ActualForecast;
 import gov.nist.healthcare.cds.domain.Event;
@@ -7,6 +8,7 @@ import gov.nist.healthcare.cds.domain.FixedDate;
 import gov.nist.healthcare.cds.domain.SoftwareConfig;
 import gov.nist.healthcare.cds.domain.TestCase;
 import gov.nist.healthcare.cds.domain.VaccinationEvent;
+import gov.nist.healthcare.cds.domain.exception.ConnectionException;
 import gov.nist.healthcare.cds.domain.wrapper.EngineResponse;
 import gov.nist.healthcare.cds.domain.wrapper.ResponseVaccinationEvent;
 import gov.nist.healthcare.cds.domain.wrapper.TestCasePayLoad;
@@ -30,6 +32,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.emf.common.util.EList;
+import org.emfjson.jackson.annotations.EcoreReferenceInfo;
 import org.hl7.fhir.Bundle;
 import org.hl7.fhir.BundleEntry;
 import org.hl7.fhir.ResourceContainer;
@@ -37,6 +40,8 @@ import org.hl7.fhir.ImmunizationRecommendation;
 import org.hl7.fhir.ImmunizationRecommendationRecommendation;
 import org.hl7.fhir.Parameters;
 import org.hl7.fhir.ParametersParameter;
+import org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent;
+import org.hl7.fhir.dstu3.model.Resource;
 
 /**
  *
@@ -56,14 +61,13 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
     }
 
     @Override
-    public EngineResponse run(SoftwareConfig config, TestCasePayLoad tc) {
+    public EngineResponse run(SoftwareConfig config, TestCasePayLoad tc) throws ConnectionException {
 
         EngineResponse response = new EngineResponse();
-        if(config.getConnector().equals(FHIRAdapter.FHIR)){
-        	this.setUseAdapter(false);
-        }
-        else {
-        	this.setUseAdapter(true);
+        if (config.getConnector().equals(FHIRAdapter.FHIR)) {
+            this.setUseAdapter(false);
+        } else {
+            this.setUseAdapter(true);
         }
         List<ActualForecast> forecasts = new ArrayList<>();
         response.setForecasts(forecasts);
@@ -78,8 +82,6 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
         SendingConfig sendingConfig = new SendingConfig();
 
-        
-  
         Date assessmentDate = tc.getEvaluationDate();
         Date dob = tc.getDateOfBirth();
 
@@ -142,6 +144,51 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             }
         } else {
 
+            org.hl7.fhir.dstu3.model.Parameters parameters = null;
+            try {
+                parameters = (org.hl7.fhir.dstu3.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter);
+            } catch (IOException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (KeyStoreException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (KeyManagementException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            FhirContext ctx = FhirContext.forDstu3();
+            String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parameters);
+            response.setResponse(raw);
+            //TODO: Error checking
+            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameter = parameters.getParameter().get(0);
+
+            org.hl7.fhir.dstu3.model.ImmunizationRecommendation ir = (org.hl7.fhir.dstu3.model.ImmunizationRecommendation) parameter.getResource();
+            List<ImmunizationRecommendationRecommendationComponent> irrs = ir.getRecommendation();
+            Iterator<ImmunizationRecommendationRecommendationComponent> it = irrs.iterator();
+            while (it.hasNext()) {
+                ImmunizationRecommendationRecommendationComponent irr = it.next();
+                ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
+                response.getForecasts().add(af);
+            }
+            
+            List<Resource> containeds = ir.getContained();
+            //TODO: Error checking
+            Iterator<Resource> itRc = containeds.iterator();
+              while (itRc.hasNext()) {
+
+                Resource rc = itRc.next();
+                if(rc instanceof org.hl7.fhir.dstu3.model.Immunization) {
+                    org.hl7.fhir.dstu3.model.Immunization imm = (org.hl7.fhir.dstu3.model.Immunization) rc;
+                    if (imm != null) {
+                        ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
+                        response.getEvents().add(rve);
+                    }
+                }
+
+            }
+            /*
+
             Parameters parameters = null;
             try {
                 parameters = (Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter);
@@ -162,30 +209,31 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             ImmunizationRecommendation ir = parameter.getResource().getImmunizationRecommendation();
             EList<ImmunizationRecommendationRecommendation> irrs = ir.getRecommendation();
             Iterator<ImmunizationRecommendationRecommendation> it = irrs.iterator();
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 ImmunizationRecommendationRecommendation irr = it.next();
-              //  if(TranslationUtils.doesRecommendationHaveDateCriterion(irr)) {
-                    ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
-                    response.getForecasts().add(af);
+                //  if(TranslationUtils.doesRecommendationHaveDateCriterion(irr)) {
+                ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
+                response.getForecasts().add(af);
 //                } else {
-  //                  ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationRecommendationRecommendationToResponseVaccinationEvent(irr);
-    //                response.getEvents().add(rve);
-      //          }
-                    
+                //                  ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationRecommendationRecommendationToResponseVaccinationEvent(irr);
+                //                response.getEvents().add(rve);
+                //          }
+
             }
             EList<ResourceContainer> containeds = ir.getContained();
             //TODO: Error checking
             Iterator<ResourceContainer> itRc = containeds.iterator();
-            while(itRc.hasNext()) {
-                
+            while (itRc.hasNext()) {
+
                 ResourceContainer rc = itRc.next();
-                org.hl7.fhir.Immunization imm = rc.getImmunization();                              
+                org.hl7.fhir.Immunization imm = rc.getImmunization();
                 if (imm != null) {
                     ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
                     response.getEvents().add(rve);
                 }
-                
+
             }
+             */
         }
         return response;
     }
@@ -206,14 +254,15 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
     public static void main(String[] args) {
         //   TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
-           TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:8443/forecast/ImmunizationRecommendations");
-        //TestRunnerService test = new TestRunnerServiceFhirImpl();
+        //      TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:8443/forecast/ImmunizationRecommendations");
+        TestRunnerService test = new TestRunnerServiceFhirImpl();
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();
-
+        //     config.setConnector(FHIRAdapter.TCH);
+        config.setConnector(FHIRAdapter.FHIR);
         config.setUser("TCH");
-        config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-        //config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
+        //config.setEndPoint("http://tchforecasttester.orgg/fv/forecast");
+        config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
 
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
@@ -271,7 +320,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         VaccineRef vr1 = new VaccineRef();
         vr1.setCvx("110");
         tc.addImmunization(vr1, immDate1);
-/*
+        /*
         VaccineRef vr2 = new VaccineRef();
         vr2.setCvx("110");
         tc.addImmunization(vr2, immDate2);
@@ -283,12 +332,19 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         VaccineRef vr4 = new VaccineRef();
         vr4.setCvx("110");
         tc.addImmunization(vr4, immDate4);
-*/
+         */
         // http://tchforecasttester.org/fv/forecast?evalDate=20170101&evalSchedule=&resultFormat=text&patientDob=20160101&patientSex=F&vaccineDate1=20170101&vaccineCvx1=110
         //tc.setEvents(events);
         //tc.setImmunizations(events);
-        EngineResponse run = test.run(config, tc);
-        System.out.println(run.getForecasts().size());        
+        EngineResponse run = null;
+        try {
+            run = test.run(config, tc);
+        } catch (ConnectionException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Exception\nStatus Code = " + ex.getStatusCode());
+            System.out.println("Status Text = " + ex.getStatusText());
+        }
+        System.out.println(run.getForecasts().size());
         System.out.println(run.getEvents().size());
         //System.out.println(run.getResponse());
     }
