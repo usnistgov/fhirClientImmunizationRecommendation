@@ -18,6 +18,9 @@ import gov.nist.healthcare.cds.enumeration.FHIRAdapter;
 import gov.nist.healthcare.cds.enumeration.Gender;
 import gov.nist.healthcare.cds.service.TestRunnerService;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -42,6 +45,7 @@ import org.hl7.fhir.Parameters;
 import org.hl7.fhir.ParametersParameter;
 import org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 
 /**
  *
@@ -122,10 +126,10 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            response.setRequest(ImmunizationRecommendationClient.generateXml(routing, sendingConfig, useAdapter));
+           // response.setRequest(ImmunizationRecommendationClient.generateXml(routing, sendingConfig, useAdapter));
             Serialize serial = new Serialize();
             response.setResponse(serial.it(result, "sut.xml"));
-            
+
             EList<BundleEntry> entries = result.getEntry();
             Iterator<BundleEntry> it = entries.iterator();
             while (it.hasNext()) {
@@ -172,14 +176,14 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
                 response.getForecasts().add(af);
             }
-            
+
             List<Resource> containeds = ir.getContained();
             //TODO: Error checking
             Iterator<Resource> itRc = containeds.iterator();
-              while (itRc.hasNext()) {
+            while (itRc.hasNext()) {
 
                 Resource rc = itRc.next();
-                if(rc instanceof org.hl7.fhir.dstu3.model.Immunization) {
+                if (rc instanceof org.hl7.fhir.dstu3.model.Immunization) {
                     org.hl7.fhir.dstu3.model.Immunization imm = (org.hl7.fhir.dstu3.model.Immunization) rc;
                     if (imm != null) {
                         ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
@@ -239,6 +243,57 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         return response;
     }
 
+    public static EngineResponse parseResponseFromXml(String xml) throws ConnectionException {
+        EngineResponse response = new EngineResponse();
+
+        response.setResponse(xml);
+        List<ActualForecast> afs = new ArrayList<ActualForecast>();
+        response.setForecasts(afs);
+        List<ResponseVaccinationEvent> rves = new ArrayList<ResponseVaccinationEvent>();
+        response.setEvents(rves);
+        
+        
+        org.hl7.fhir.dstu3.model.Parameters parameters = null;
+        FhirContext ctx = FhirContext.forDstu3();
+        IBaseResource parsed = ctx.newXmlParser().parseResource(xml);
+
+        if (!(parsed instanceof org.hl7.fhir.dstu3.model.Parameters)) {
+            throw new ConnectionException(null, "Unexpected content found");
+        }
+        parameters = (org.hl7.fhir.dstu3.model.Parameters) parsed;
+        
+        String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parameters);
+        response.setResponse(raw);
+        //TODO: Error checking
+        org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameter = parameters.getParameter().get(0);
+
+        org.hl7.fhir.dstu3.model.ImmunizationRecommendation ir = (org.hl7.fhir.dstu3.model.ImmunizationRecommendation) parameter.getResource();
+        List<ImmunizationRecommendationRecommendationComponent> irrs = ir.getRecommendation();
+        Iterator<ImmunizationRecommendationRecommendationComponent> it = irrs.iterator();
+        while (it.hasNext()) {
+            ImmunizationRecommendationRecommendationComponent irr = it.next();
+            ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
+            response.getForecasts().add(af);
+        }
+
+        List<Resource> containeds = ir.getContained();
+        //TODO: Error checking
+        Iterator<Resource> itRc = containeds.iterator();
+        while (itRc.hasNext()) {
+
+            Resource rc = itRc.next();
+            if (rc instanceof org.hl7.fhir.dstu3.model.Immunization) {
+                org.hl7.fhir.dstu3.model.Immunization imm = (org.hl7.fhir.dstu3.model.Immunization) rc;
+                if (imm != null) {
+                    ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
+                    response.getEvents().add(rve);
+                }
+            }
+
+        }
+        return response;
+    }
+
     /**
      * @return the adapterUrl
      */
@@ -253,17 +308,33 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         this.adapterUrl = adapterUrl;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ConnectionException {
+        
+        String fileString = new String(Files.readAllBytes(Paths.get("/home/mccaffrey/working/cdsiFhirResponse20170317.xml")), StandardCharsets.UTF_8);
+        System.out.println("Contents (Java 7 with character encoding ) : " + fileString);
+        
+        
+        
+        
+        
+        EngineResponse response = TestRunnerServiceFhirImpl.parseResponseFromXml(fileString);
+        
+        System.out.println(response.getEvents().size());
+        System.out.println(response.getForecasts().size());
+        
         //   TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
-        //      TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:8443/forecast/ImmunizationRecommendations");
-        TestRunnerService test = new TestRunnerServiceFhirImpl();
+        //    TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:8443/forecast/ImmunizationRecommendations");
+/*
+        //TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhir/ImmunizationRecommendation");
+        TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhir/Parameters/$IR");
+        //TestRunnerService test = new TestRunnerServiceFhirImpl();
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();
-        //     config.setConnector(FHIRAdapter.TCH);
-        config.setConnector(FHIRAdapter.FHIR);
+        config.setConnector(FHIRAdapter.TCH);
+        //config.setConnector(FHIRAdapter.FHIR);
         config.setUser("TCH");
-        //config.setEndPoint("http://tchforecasttester.orgg/fv/forecast");
-        config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
+        config.setEndPoint("http://tchforecasttester.orgg/fv/forecast");
+        //config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
 
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
@@ -302,6 +373,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         events.add(ve3);
          */
         //List<VaccinationEventPayLoad> vaccinationEvents = new ArrayList<VaccinationEventPayLoad>();
+        /*
         Calendar immCal1 = Calendar.getInstance();
         immCal1.set(2009, 10, 9);
         Date immDate1 = immCal1.getTime();
@@ -337,6 +409,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         // http://tchforecasttester.org/fv/forecast?evalDate=20170101&evalSchedule=&resultFormat=text&patientDob=20160101&patientSex=F&vaccineDate1=20170101&vaccineCvx1=110
         //tc.setEvents(events);
         //tc.setImmunizations(events);
+        /*
         EngineResponse run = null;
         try {
             run = test.run(config, tc);
@@ -348,6 +421,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         System.out.println(run.getForecasts().size());
         System.out.println(run.getEvents().size());
         //System.out.println(run.getResponse());
+        */
     }
 
     /**

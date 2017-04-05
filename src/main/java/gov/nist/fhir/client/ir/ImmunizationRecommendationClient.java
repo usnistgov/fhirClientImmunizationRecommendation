@@ -9,6 +9,7 @@ import ca.uhn.fhir.context.FhirContext;
 import fhir.util.DeSerialize;
 import fhir.util.FHIRUtil;
 import fhir.util.Serialize;
+import gov.nist.fhir.Consts;
 import gov.nist.healthcare.cds.domain.exception.ConnectionException;
 
 import java.io.File;
@@ -73,16 +74,16 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
  * @author mccaffrey
  */
 public class ImmunizationRecommendationClient {
-
+/*
     public static final String PARAMETER_NAME_GENDER = "gender";
-    public static final String PARAMETER_NAME_BIRTH_DATE = "birthDate";
-    public static final String PARAMETER_NAME_SERVICE_TYPE = "serviceType";
-    public static final String PARAMETER_NAME_SERVICE_URL = "serviceURL";
-    public static final String PARAMETER_NAME_ASSESSMENT_DATE = "assessmentDate";
-    public static final String PARAMETER_NAME_IMMUNIZATION = "Immunization";
-    public static final String PARAMETER_NAME_IMMUNIZATION_ADAPTER = "Immunizations";
-    public static final String PARAMETER_NAME_PATIENT = "patient";
-
+    public static final String Consts.PARAMETER_NAME_BIRTH_DATE = "birthDate";
+    public static final String Consts.PARAMETER_NAME_SERVICE_TYPE = "serviceType";
+    public static final String Consts.PARAMETER_NAME_SERVICE_URL = "serviceURL";
+    public static final String Consts.PARAMETER_NAME_ASSESSMENT_DATE = "assessmentDate";
+    public static final String Consts.PARAMETER_NAME_IMMUNIZATION = "Immunization";
+    public static final String Consts.PARAMETER_NAME_IMMUNIZATION_ADAPTER = "Immunizations";
+    public static final String Consts.PARAMETER_NAME_PATIENT = "patient";
+*/
     public static String generateXml(Routing routing, SendingConfig sendingConfig, boolean useAdapter) {
 
         Parameters parameters = FhirFactory.eINSTANCE.createParameters();
@@ -97,24 +98,25 @@ public class ImmunizationRecommendationClient {
 
         FhirContext ctx = FhirContext.forDstu3();
         org.hl7.fhir.dstu3.model.Parameters parametersFhir = new org.hl7.fhir.dstu3.model.Parameters();
-
+/*
         if (useAdapter) {
             ParametersParameter genderParameter = FhirFactory.eINSTANCE.createParametersParameter();
-            genderParameter.setName(FHIRUtil.convert(PARAMETER_NAME_GENDER));
+            genderParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_GENDER));
             Code genderValue = FhirFactory.eINSTANCE.createCode();
             genderValue.setValue(sendingConfig.getGender().toLowerCase());
             genderParameter.setValueCode(genderValue);
             parameters.getParameter().add(genderParameter);
 
             ParametersParameter dobParameter = FhirFactory.eINSTANCE.createParametersParameter();
-            dobParameter.setName(FHIRUtil.convert(PARAMETER_NAME_BIRTH_DATE));
+            dobParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_BIRTH_DATE));
 
             dobParameter.setValueDate(dobValue);
             parameters.getParameter().add(dobParameter);
         } else {
+        */
             /*
             ParametersParameter patientParameter = FhirFactory.eINSTANCE.createParametersParameter();
-            patientParameter.setName(FHIRUtil.convert(PARAMETER_NAME_PATIENT));
+            patientParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_PATIENT));
             Patient patient = FhirFactory.eINSTANCE.createPatient();
             patient.setId(patientId);
             Code genderCode = FhirFactory.eINSTANCE.createCode();
@@ -127,7 +129,7 @@ public class ImmunizationRecommendationClient {
             parameters.getParameter().add(patientParameter);
              */
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent patientParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
-            patientParametersParameterFhir.setName(PARAMETER_NAME_PATIENT);
+            patientParametersParameterFhir.setName(Consts.PARAMETER_NAME_PATIENT);
             org.hl7.fhir.dstu3.model.Patient patientFhir = new org.hl7.fhir.dstu3.model.Patient();
             patientFhir.setId(patientId.getValue());
             char gender = sendingConfig.getGender().toLowerCase().charAt(0);
@@ -158,36 +160,55 @@ public class ImmunizationRecommendationClient {
             }                        
             patientParametersParameterFhir.setResource(patientFhir);            
             parametersFhir.addParameter(patientParametersParameterFhir);                                    
-        }
+      //  }
 
         if (useAdapter) {
+            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent serviceTypeParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
+            serviceTypeParameterFhir.setName(Consts.PARAMETER_NAME_SERVICE_TYPE);
+            
+            org.hl7.fhir.dstu3.model.StringType serviceTypeString = new org.hl7.fhir.dstu3.model.StringType();
+            serviceTypeString.setValue(routing.getForecastType());
+            serviceTypeParameterFhir.setValue(serviceTypeString);
+            parametersFhir.addParameter(serviceTypeParameterFhir);
+                    
+            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent serviceUrlParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();        
+            serviceUrlParameterFhir.setName(Consts.PARAMETER_NAME_SERVICE_URL);
+            org.hl7.fhir.dstu3.model.StringType serviceUrlString = new org.hl7.fhir.dstu3.model.StringType();
+            serviceUrlString.setValue(routing.getForecastUrl());
+            serviceUrlParameterFhir.setValue(serviceUrlString);
+            parametersFhir.addParameter(serviceUrlParameterFhir);
+            
+            /*
+                    
             ParametersParameter serviceTypeParameter = FhirFactory.eINSTANCE.createParametersParameter();
-            serviceTypeParameter.setName(FHIRUtil.convert(PARAMETER_NAME_SERVICE_TYPE));
+            serviceTypeParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_SERVICE_TYPE));
             org.hl7.fhir.String serviceTypeString = FhirFactory.eINSTANCE.createString();
             serviceTypeString.setValue(routing.getForecastType());
             serviceTypeParameter.setValueString(serviceTypeString);
             parameters.getParameter().add(serviceTypeParameter);
 
             ParametersParameter serviceUrlParameter = FhirFactory.eINSTANCE.createParametersParameter();
-            serviceUrlParameter.setName(FHIRUtil.convert(PARAMETER_NAME_SERVICE_URL));
+            serviceUrlParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_SERVICE_URL));
             org.hl7.fhir.String serviceUrlString = FhirFactory.eINSTANCE.createString();
             serviceUrlString.setValue(routing.getForecastUrl());
             serviceUrlParameter.setValueString(serviceUrlString);
             parameters.getParameter().add(serviceUrlParameter);
+            */
         }
 
-        if(useAdapter) {
+       /* if(useAdapter) {
         
-        ParametersParameter assessmentDateParameter = FhirFactory.eINSTANCE.createParametersParameter();
-        assessmentDateParameter.setName(FHIRUtil.convert(PARAMETER_NAME_ASSESSMENT_DATE));
-        Date assessmentDateValue = FhirFactory.eINSTANCE.createDate();
-        assessmentDateValue.setValue(FHIRUtil.convert2XMLCalendar(sendingConfig.getAssessmentDate()));
-        assessmentDateParameter.setValueDate(assessmentDateValue);
-        parameters.getParameter().add(assessmentDateParameter);
+            ParametersParameter assessmentDateParameter = FhirFactory.eINSTANCE.createParametersParameter();
+            assessmentDateParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_ASSESSMENT_DATE));
+            Date assessmentDateValue = FhirFactory.eINSTANCE.createDate();
+            assessmentDateValue.setValue(FHIRUtil.convert2XMLCalendar(sendingConfig.getAssessmentDate()));
+            assessmentDateParameter.setValueDate(assessmentDateValue);
+            parameters.getParameter().add(assessmentDateParameter);
 
         } else {
+        */
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent assessmentDateParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();            
-            assessmentDateParametersParameterFhir.setName(PARAMETER_NAME_ASSESSMENT_DATE);
+            assessmentDateParametersParameterFhir.setName(Consts.PARAMETER_NAME_ASSESSMENT_DATE);
             DateType assessmentDateFhir = new DateType();
             
             
@@ -207,14 +228,14 @@ public class ImmunizationRecommendationClient {
             }
             parametersFhir.addParameter(assessmentDateParametersParameterFhir);    
             
-        }
-        
+     //   }
+        /*
         if (useAdapter) {
 
             Collection<Immunization> immunizations = sendingConfig.getImmunizationData();
             if (immunizations != null) {
                 ParametersParameter immunizationsParameter = FhirFactory.eINSTANCE.createParametersParameter();
-                immunizationsParameter.setName(FHIRUtil.convert(PARAMETER_NAME_IMMUNIZATION_ADAPTER));
+                immunizationsParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_IMMUNIZATION_ADAPTER));
                 Iterator<Immunization> iterator = immunizations.iterator();
                 int i = 0;
                 while (iterator.hasNext()) {
@@ -251,13 +272,14 @@ public class ImmunizationRecommendationClient {
                 parameters.getParameter().add(immunizationsParameter);
             }
         } else {
+     */
             Collection<Immunization> immunizations = sendingConfig.getImmunizationData();
             if (immunizations != null) {
                 Iterator<Immunization> it = immunizations.iterator();
                 while (it.hasNext()) {
                     Immunization immunization = it.next();
                     org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();            
-                    immunizationParametersParameterFhir.setName(PARAMETER_NAME_IMMUNIZATION);
+                    immunizationParametersParameterFhir.setName(Consts.PARAMETER_NAME_IMMUNIZATION);
                     org.hl7.fhir.dstu3.model.Immunization immunizationFhir = new org.hl7.fhir.dstu3.model.Immunization();
                     immunizationFhir.setId(UUID.randomUUID().toString());
                     try {
@@ -284,7 +306,7 @@ public class ImmunizationRecommendationClient {
                     //TODO: Reported???
                     
                     //ParametersParameter immParam = FhirFactory.eINSTANCE.createParametersParameter();
-                    //immParam.setName(FHIRUtil.convert(PARAMETER_NAME_IMMUNIZATION));
+                    //immParam.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_IMMUNIZATION));
                     //ResourceContainer resource = FhirFactory.eINSTANCE.createResourceContainer();
                     //org.hl7.fhir.Immunization fhirImmunization = FhirFactory.eINSTANCE.createImmunization();
                     //Id immunizationId = FhirFactory.eINSTANCE.createId();
@@ -325,17 +347,17 @@ public class ImmunizationRecommendationClient {
             
           
             
-        }
+     //   }
 
         
         String xml = null;
         
-        if(useAdapter) {
-            Serialize seri = new Serialize();
-            xml = seri.it(parameters, "sut.xml");
-        } else {
+//        if(useAdapter) {
+  //          Serialize seri = new Serialize();
+    //        xml = seri.it(parameters, "sut.xml");
+      //  } else {
             xml = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parametersFhir);
-        }
+//        }
         
 
         //       System.out.println(seri.it(patientParameter, "sut.xml"));
