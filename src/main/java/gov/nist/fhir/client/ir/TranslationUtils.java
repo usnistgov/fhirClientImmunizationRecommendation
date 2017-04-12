@@ -301,6 +301,7 @@ public class TranslationUtils {
         af.setDoseNumber(Integer.toString(irr.getDoseNumber()));        
         VaccineRef vaccineRef = new VaccineRef();
         if (irr.getVaccineCode() != null && irr.getVaccineCode().getCoding() != null
+                && irr.getVaccineCode().getCoding().size() > 1
                 && irr.getVaccineCode().getCoding().get(0) != null
                 && irr.getVaccineCode().getCoding().get(0).getCode() != null) {
             vaccineRef.setCvx(irr.getVaccineCode().getCoding().get(0).getCode());
@@ -341,17 +342,27 @@ public class TranslationUtils {
             }
         }
         if (irr.getForecastStatus() != null && irr.getForecastStatus().getCoding() != null
+                && irr.getForecastStatus().getCoding().size() > 0
                 && irr.getForecastStatus().getCoding().get(0) != null
                 && irr.getForecastStatus().getCoding().get(0).getCode() != null) {
             String status = irr.getForecastStatus().getCoding().get(0).getCode();
 
             // TODO: Is this work around needed? Or is one just wrong?
+            try {
             if (status.equals("Not Complete")) {
                 af.setSerieStatus(SerieStatus.E);
             } else if (status.equals("Aged Out")) {
                 af.setSerieStatus(SerieStatus.G);
+            } else if (status.equalsIgnoreCase("o")) { 
+                af.setSerieStatus(SerieStatus.O);
+            } else if (status.equalsIgnoreCase("d")) {
+                af.setSerieStatus(SerieStatus.D);
             } else {
                 af.setSerieStatus(SerieStatus.valueOf(status));
+            }
+            } catch (Exception e) {
+                //TODO better error checking
+                System.out.println("Unexpected dose status");
             }
         }
         return af;
