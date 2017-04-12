@@ -6,19 +6,12 @@
 package gov.nist.fhir.client.ir;
 
 import ca.uhn.fhir.context.FhirContext;
-import fhir.util.DeSerialize;
-import fhir.util.FHIRUtil;
-import fhir.util.Serialize;
 import gov.nist.fhir.Consts;
 import gov.nist.healthcare.cds.domain.exception.ConnectionException;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 
-import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -27,11 +20,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;
@@ -41,33 +32,17 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.xmi.impl.XMLHelperImpl;
-import org.emfjson.jackson.annotations.EcoreReferenceInfo;
-
-import org.hl7.fhir.Bundle;
-import org.hl7.fhir.Code;
-import org.hl7.fhir.CodeableConcept;
-import org.hl7.fhir.Coding;
 import org.hl7.fhir.Date;
-import org.hl7.fhir.DateTime;
 import org.hl7.fhir.FhirFactory;
 import org.hl7.fhir.Id;
 import org.hl7.fhir.Parameters;
 import org.hl7.fhir.ParametersParameter;
-import org.hl7.fhir.Patient;
-import org.hl7.fhir.Reference;
 import org.hl7.fhir.ResourceContainer;
 import org.hl7.fhir.dstu3.model.DateType;
 import org.hl7.fhir.dstu3.model.Enumerations;
-import org.hl7.fhir.dstu3.model.Type;
-import org.hl7.fhir.exceptions.FHIRException;
-import org.hl7.fhir.impl.BundleImpl;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 
 /**
  *
@@ -86,15 +61,15 @@ public class ImmunizationRecommendationClient {
 */
     public static String generateXml(Routing routing, SendingConfig sendingConfig, boolean useAdapter) {
 
-        Parameters parameters = FhirFactory.eINSTANCE.createParameters();
-        Id id = FhirFactory.eINSTANCE.createId();
-        id.setValue(UUID.randomUUID().toString());
-        parameters.setId(id);
+       // Parameters parameters = FhirFactory.eINSTANCE.createParameters();
+        //Id id = FhirFactory.eINSTANCE.createId();
+        //id.setValue(UUID.randomUUID().toString());
+        //parameters.setId(id);
 
-        Date dobValue = FhirFactory.eINSTANCE.createDate();
-        dobValue.setValue(FHIRUtil.convert2XMLCalendar(sendingConfig.getBirthdate()));
-        Id patientId = FhirFactory.eINSTANCE.createId();
-        patientId.setValue(UUID.randomUUID().toString());
+        //Date dobValue = FhirFactory.eINSTANCE.createDate();
+        //dobValue.setValue(FHIRUtil.convert2XMLCalendar(sendingConfig.getBirthdate()));
+        String patientId = UUID.randomUUID().toString();
+        //patientId.setValue(UUID.randomUUID().toString());
 
         FhirContext ctx = FhirContext.forDstu3();
         org.hl7.fhir.dstu3.model.Parameters parametersFhir = new org.hl7.fhir.dstu3.model.Parameters();
@@ -131,7 +106,7 @@ public class ImmunizationRecommendationClient {
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent patientParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
             patientParametersParameterFhir.setName(Consts.PARAMETER_NAME_PATIENT);
             org.hl7.fhir.dstu3.model.Patient patientFhir = new org.hl7.fhir.dstu3.model.Patient();
-            patientFhir.setId(patientId.getValue());
+            patientFhir.setId(patientId);
             char gender = sendingConfig.getGender().toLowerCase().charAt(0);
             switch (gender) {
                 case 'm':
@@ -297,7 +272,7 @@ public class ImmunizationRecommendationClient {
                     immunizationFhir.setVaccineCode(vaccineFhir);
                     immunizationFhir.setStatus(org.hl7.fhir.dstu3.model.Immunization.ImmunizationStatus.COMPLETED);
                     org.hl7.fhir.dstu3.model.Reference patientReference = new org.hl7.fhir.dstu3.model.Reference();
-                    patientReference.setReference(patientId.getValue());
+                    patientReference.setReference(patientId);
                     immunizationFhir.setPatient(patientReference);
                     immunizationFhir.setNotGiven(false);
                     immunizationParametersParameterFhir.setResource(immunizationFhir);
@@ -676,20 +651,20 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         rc.setImmunizationRecommendation(ir);
         param.setResource(rc);
 
-        Serialize ser = new Serialize();
-        String irString = ser.it(ir, "*.xml");
-        String paramsString = ser.it(params, "*.xml");
+      //  Serialize ser = new Serialize();
+//        String irString = ser.it(ir, "*.xml");
+  //      String paramsString = ser.it(params, "*.xml");
         //   String paramsString;
         //try {
-        paramsString = ser.it(params, "*.xml"); //ser.xmlFromParameter(params);
-        String paramString = ser.it(param, "*.xml");
-        String param2String = ser.it(param2, "*.xml");
+    //    paramsString = ser.it(params, "*.xml"); //ser.xmlFromParameter(params);
+      //  String paramString = ser.it(param, "*.xml");
+        //String param2String = ser.it(param2, "*.xml");
 
         // XMLHelperImpl.saveString(options, contents, irString, helper)
         //System.out.println(irString);
-        System.out.println(paramsString);
-        System.out.println(paramString);
-        System.out.println(param2String);
+        //System.out.println(paramsString);
+        //System.out.println(paramString);
+        //System.out.println(param2String);
         //} catch (ParserConfigurationException ex) {
 //            Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
         //      }

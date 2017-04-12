@@ -6,8 +6,7 @@
 package gov.nist.fhir.client.ir;
 
 import ca.uhn.fhir.context.FhirContext;
-import fhir.util.DeSerialize;
-import fhir.util.Serialize;
+
 import gov.nist.healthcare.cds.domain.exception.ConnectionException;
 import gov.nist.healthcare.cds.domain.wrapper.ActualForecast;
 import gov.nist.healthcare.cds.domain.wrapper.EngineResponse;
@@ -40,8 +39,9 @@ public class Standalone {
     
     
     public static EngineResponse parseResponseFromXml(String xml) throws ConnectionException {
+        
         EngineResponse response = new EngineResponse();
-
+/*
         response.setResponse(xml);
         List<ActualForecast> afs = new ArrayList<ActualForecast>();
         response.setForecasts(afs);
@@ -53,19 +53,7 @@ public class Standalone {
                     
         DeSerialize deserial = new DeSerialize();
         result = (Bundle) deserial.it(new StringReader(xml), "*.xml");
-        /*            
-            try {
-                result = (Bundle) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter);
-            } catch (IOException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (KeyStoreException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchAlgorithmException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (KeyManagementException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-*/
+
            // response.setRequest(ImmunizationRecommendationClient.generateXml(routing, sendingConfig, useAdapter));
             Serialize serial = new Serialize();
             response.setResponse(serial.it(result, "sut.xml"));
@@ -90,46 +78,6 @@ public class Standalone {
         
         
         
-        /*
-        
-        org.hl7.fhir.dstu3.model.Parameters parameters = null;
-        FhirContext ctx = FhirContext.forDstu3();
-        IBaseResource parsed = ctx.newXmlParser().parseResource(xml);
-
-        if (!(parsed instanceof org.hl7.fhir.dstu3.model.Parameters)) {
-            throw new ConnectionException(null, "Unexpected content found");
-        }
-        parameters = (org.hl7.fhir.dstu3.model.Parameters) parsed;
-        
-        String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parameters);
-        response.setResponse(raw);
-        //TODO: Error checking
-        org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameter = parameters.getParameter().get(0);
-
-        org.hl7.fhir.dstu3.model.ImmunizationRecommendation ir = (org.hl7.fhir.dstu3.model.ImmunizationRecommendation) parameter.getResource();
-        List<org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> irrs = ir.getRecommendation();
-        Iterator<org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> it = irrs.iterator();
-        while (it.hasNext()) {
-            org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irr = it.next();
-            ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
-            response.getForecasts().add(af);
-        }
-
-        List<Resource> containeds = ir.getContained();
-        //TODO: Error checking
-        Iterator<Resource> itRc = containeds.iterator();
-        while (itRc.hasNext()) {
-
-            Resource rc = itRc.next();
-            if (rc instanceof org.hl7.fhir.dstu3.model.Immunization) {
-                org.hl7.fhir.dstu3.model.Immunization imm = (org.hl7.fhir.dstu3.model.Immunization) rc;
-                if (imm != null) {
-                    ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
-                    response.getEvents().add(rve);
-                }
-            }
-
-        }
 */
         return response;
     }
