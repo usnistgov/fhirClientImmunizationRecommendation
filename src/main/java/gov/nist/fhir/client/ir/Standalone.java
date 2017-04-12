@@ -5,31 +5,13 @@
  */
 package gov.nist.fhir.client.ir;
 
-import ca.uhn.fhir.context.FhirContext;
 
 import gov.nist.healthcare.cds.domain.exception.ConnectionException;
-import gov.nist.healthcare.cds.domain.wrapper.ActualForecast;
 import gov.nist.healthcare.cds.domain.wrapper.EngineResponse;
-import gov.nist.healthcare.cds.domain.wrapper.ResponseVaccinationEvent;
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.eclipse.emf.common.util.EList;
-import org.hl7.fhir.Bundle;
-import org.hl7.fhir.BundleEntry;
-import org.hl7.fhir.ResourceContainer;
-import org.hl7.fhir.dstu3.model.Resource;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 
 /**
  *

@@ -19,12 +19,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import org.eclipse.emf.common.util.EList;
-import org.hl7.fhir.Immunization;
-import org.hl7.fhir.ImmunizationRecommendation;
-import org.hl7.fhir.ImmunizationRecommendationDateCriterion;
-import org.hl7.fhir.ImmunizationRecommendationRecommendation;
-import org.hl7.fhir.ImmunizationVaccinationProtocol;
 import org.hl7.fhir.dstu3.model.Immunization.ImmunizationVaccinationProtocolComponent;
 import org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationDateCriterionComponent;
 
@@ -68,7 +62,7 @@ public class TranslationUtils {
         return new FixedDate(month + '/' + day + '/' + year);
 
     }
-
+/*
     public static ResponseVaccinationEvent translateImmunizationToResponseVaccinationEvent(Immunization imm) {
 
         ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
@@ -108,7 +102,7 @@ public class TranslationUtils {
         }
         return rve;
     }
-
+*/
     public static ResponseVaccinationEvent translateImmunizationToResponseVaccinationEvent(org.hl7.fhir.dstu3.model.Immunization imm) {
 
         ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
@@ -151,7 +145,7 @@ public class TranslationUtils {
     }
 
     
-    
+    /*
     
     public static ResponseVaccinationEvent translateImmunizationRecommendationRecommendationToResponseVaccinationEvent(
             ImmunizationRecommendationRecommendation irr) {
@@ -170,7 +164,8 @@ public class TranslationUtils {
 
         return rve;
     }
-
+    */
+/*
     public static ActualForecast translateImmunizationRecommendationToActualForecast(ImmunizationRecommendation ir) {
         ActualForecast forecast = new ActualForecast();
         if (ir.getRecommendation() == null || ir.getRecommendation().get(0) == null) {
@@ -231,7 +226,8 @@ public class TranslationUtils {
         }
         return forecast;
     }
-
+*/
+    /*
     public static ActualForecast translateImmunizationRecommendationRecommendationToActualForecast(
             ImmunizationRecommendationRecommendation irr) {
         ActualForecast af = new ActualForecast();
@@ -293,7 +289,7 @@ public class TranslationUtils {
         return af;
 
     }
-
+*/
     public static ActualForecast translateImmunizationRecommendationRecommendationToActualForecast(
             org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irr) {
         ActualForecast af = new ActualForecast();        
@@ -368,7 +364,7 @@ public class TranslationUtils {
         return af;
 
     }
-
+/*
     public static boolean doesRecommendationHaveDateCriterion(ImmunizationRecommendationRecommendation irr) {
 
         if (irr.getDateCriterion() == null) {
@@ -380,5 +376,5 @@ public class TranslationUtils {
         return true;
 
     }
-
+*/
 }

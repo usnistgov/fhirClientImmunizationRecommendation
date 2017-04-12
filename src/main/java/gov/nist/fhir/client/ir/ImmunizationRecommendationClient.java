@@ -34,13 +34,6 @@ import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 
-import org.eclipse.emf.ecore.EObject;
-import org.hl7.fhir.Date;
-import org.hl7.fhir.FhirFactory;
-import org.hl7.fhir.Id;
-import org.hl7.fhir.Parameters;
-import org.hl7.fhir.ParametersParameter;
-import org.hl7.fhir.ResourceContainer;
 import org.hl7.fhir.dstu3.model.DateType;
 import org.hl7.fhir.dstu3.model.Enumerations;
 
@@ -628,7 +621,11 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         imms.add(imm2);
 
         sendingConfig.setImmunizationData(imms);
-
+        
+         
+         
+        
+/*
         EObject bundle = (EObject) irc.getImmunizationRecommendation(routing, sendingConfig, false);
         //   Serialize ser = new Serialize();
 
@@ -668,7 +665,7 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         //} catch (ParserConfigurationException ex) {
 //            Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
         //      }
-
+*/
     }
 
 }
