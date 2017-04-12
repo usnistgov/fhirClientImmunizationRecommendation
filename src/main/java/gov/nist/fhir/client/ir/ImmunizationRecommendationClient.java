@@ -545,6 +545,7 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         //TODO: This workaround is no longer needed.  Fix it.
         String xml = response.getPayload();
         Object s1 = null;
+        /*
         if(useAdapter) {
         DeSerialize deserial = new DeSerialize();
         s1 = deserial.it(new StringReader(xml), "*.xml");
@@ -608,13 +609,15 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
          */
         //   tempFile.delete();
         //return recommendations;
-        } else {
+       
+    //    } else {
+    
             FhirContext ctx = FhirContext.forDstu3();
             s1 = ctx.newXmlParser().parseResource(xml);
          //org.hl7.fhir.dstu3.model.Bundle bundle = new org.hl7.fhir.dstu3.model.Bundle();
          //bundle = (org.hl7.fhir.dstu3.model.Bundle) s2;
          //s1 = bundle;
-        }
+      //  }
         return s1;
         //return engineResponse;
 
