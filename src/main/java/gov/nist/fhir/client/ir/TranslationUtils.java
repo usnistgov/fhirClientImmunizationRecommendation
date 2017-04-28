@@ -51,8 +51,6 @@ public class TranslationUtils {
         return print.format(date);
     }
 
-            
-    
     public static FixedDate translateTchDateToFhirDate(String date) {
 
         String year = date.substring(0, 4);
@@ -62,7 +60,8 @@ public class TranslationUtils {
         return new FixedDate(month + '/' + day + '/' + year);
 
     }
-/*
+
+    /*
     public static ResponseVaccinationEvent translateImmunizationToResponseVaccinationEvent(Immunization imm) {
 
         ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
@@ -102,7 +101,7 @@ public class TranslationUtils {
         }
         return rve;
     }
-*/
+     */
     public static ResponseVaccinationEvent translateImmunizationToResponseVaccinationEvent(org.hl7.fhir.dstu3.model.Immunization imm) {
 
         ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
@@ -117,7 +116,7 @@ public class TranslationUtils {
 
         rve.setDate(new FixedDate(imm.getDate()));
         rve.setEvaluations(new HashSet<ActualEvaluation>());
-        
+
         List<ImmunizationVaccinationProtocolComponent> vaccinationProtocols = imm.getVaccinationProtocol();
         Iterator<ImmunizationVaccinationProtocolComponent> it = vaccinationProtocols.iterator();
         while (it.hasNext()) {
@@ -144,7 +143,6 @@ public class TranslationUtils {
         return rve;
     }
 
-    
     /*
     
     public static ResponseVaccinationEvent translateImmunizationRecommendationRecommendationToResponseVaccinationEvent(
@@ -164,8 +162,8 @@ public class TranslationUtils {
 
         return rve;
     }
-    */
-/*
+     */
+ /*
     public static ActualForecast translateImmunizationRecommendationToActualForecast(ImmunizationRecommendation ir) {
         ActualForecast forecast = new ActualForecast();
         if (ir.getRecommendation() == null || ir.getRecommendation().get(0) == null) {
@@ -226,8 +224,8 @@ public class TranslationUtils {
         }
         return forecast;
     }
-*/
-    /*
+     */
+ /*
     public static ActualForecast translateImmunizationRecommendationRecommendationToActualForecast(
             ImmunizationRecommendationRecommendation irr) {
         ActualForecast af = new ActualForecast();
@@ -289,12 +287,18 @@ public class TranslationUtils {
         return af;
 
     }
-*/
+     */
     public static ActualForecast translateImmunizationRecommendationRecommendationToActualForecast(
             org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irr) {
-        ActualForecast af = new ActualForecast();        
+        
+        if (irr.getDate() == null || "".equals(irr.getDate())) {
+            return null;
+        }
+
+        
+        ActualForecast af = new ActualForecast();
         //TODO: Error checking
-        af.setDoseNumber(Integer.toString(irr.getDoseNumber()));        
+        af.setDoseNumber(Integer.toString(irr.getDoseNumber()));
         VaccineRef vaccineRef = new VaccineRef();
         if (irr.getVaccineCode() != null && irr.getVaccineCode().getCoding() != null
                 && irr.getVaccineCode().getCoding().size() > 1
@@ -303,14 +307,14 @@ public class TranslationUtils {
             vaccineRef.setCvx(irr.getVaccineCode().getCoding().get(0).getCode());
         }
         af.setVaccine(vaccineRef);
-        
+
         List<ImmunizationRecommendationRecommendationDateCriterionComponent> dateCriterions = irr.getDateCriterion();
-        
+
         Iterator<ImmunizationRecommendationRecommendationDateCriterionComponent> it = dateCriterions.iterator();
         while (it.hasNext()) {
-            
+
             ImmunizationRecommendationRecommendationDateCriterionComponent dateCriterion = it.next();
-            
+
             if (dateCriterion.getValue() != null && dateCriterion.getValue() != null) {
                 FixedDate date = new FixedDate(dateCriterion.getValue());
 
@@ -345,26 +349,28 @@ public class TranslationUtils {
 
             // TODO: Is this work around needed? Or is one just wrong?
             try {
-            if (status.equals("Not Complete")) {
-                af.setSerieStatus(SerieStatus.E);
-            } else if (status.equals("Aged Out")) {
-                af.setSerieStatus(SerieStatus.G);
-            } else if (status.equalsIgnoreCase("o")) { 
-                af.setSerieStatus(SerieStatus.O);
-            } else if (status.equalsIgnoreCase("d")) {
-                af.setSerieStatus(SerieStatus.D);
-            } else {
-                af.setSerieStatus(SerieStatus.valueOf(status));
-            }
+                if (status.equals("Not Complete")) {
+                    af.setSerieStatus(SerieStatus.E);
+                } else if (status.equals("Aged Out")) {
+                    af.setSerieStatus(SerieStatus.G);
+                } else if (status.startsWith("o")) {
+                    af.setSerieStatus(SerieStatus.O);
+                } else if (status.equalsIgnoreCase("d")) {
+                    af.setSerieStatus(SerieStatus.D);
+                } else if (status.startsWith("u")) {
+                    af.setSerieStatus(SerieStatus.U);
+                } else {
+                    af.setSerieStatus(SerieStatus.valueOf(status));
+                }
             } catch (Exception e) {
                 //TODO better error checking
-                System.out.println("Unexpected dose status");
+                System.out.println("Unexpected dose status = " + status);
             }
         }
         return af;
 
     }
-/*
+    /*
     public static boolean doesRecommendationHaveDateCriterion(ImmunizationRecommendationRecommendation irr) {
 
         if (irr.getDateCriterion() == null) {
@@ -376,5 +382,5 @@ public class TranslationUtils {
         return true;
 
     }
-*/
+     */
 }
