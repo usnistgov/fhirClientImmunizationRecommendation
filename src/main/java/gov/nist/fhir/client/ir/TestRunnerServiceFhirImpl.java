@@ -155,7 +155,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             while (it.hasNext()) {
                 ImmunizationRecommendationRecommendationComponent irr = it.next();
                 ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
-                response.getForecasts().add(af);
+                if(af != null)
+                    response.getForecasts().add(af);
             }
 
             List<Resource> containeds = ir.getContained();
@@ -168,7 +169,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                     org.hl7.fhir.dstu3.model.Immunization imm = (org.hl7.fhir.dstu3.model.Immunization) rc;
                     if (imm != null) {
                         ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
-                        response.getEvents().add(rve);
+                        if (rve != null)
+                            response.getEvents().add(rve);
                     }
                 }
 
@@ -238,6 +240,22 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         this.adapterUrl = adapterUrl;
     }
 
+    /**
+     * @return the useAdapter
+     */
+    public boolean isUseAdapter() {
+        return useAdapter;
+    }
+
+    /**
+     * @param useAdapter the useAdapter to set
+     */
+    public void setUseAdapter(boolean useAdapter) {
+        this.useAdapter = useAdapter;
+    }
+
+    
+    
     public static void main(String[] args) throws IOException, ConnectionException {
         
 
@@ -246,8 +264,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
         //TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhir/ImmunizationRecommendation");
 //        TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhir/Parameters/$IR");
-//          TestRunnerService test = new TestRunnerServiceFhirImpl("http://p860556.campus.nist.gov:9080/fhirAdapter/fhir/Parameters/$IR");
-           TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:9443/fhirAdapter/fhir/Parameters/$IR");
+            //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://p860556.campus.nist.gov:8084/fhirAdapter/fhir/Parameters/$IR");
+           TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:9443/fhirAdapter/fhir/Parameters/$cds-forecast");
 
 
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -332,18 +350,5 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         
     }
 
-    /**
-     * @return the useAdapter
-     */
-    public boolean isUseAdapter() {
-        return useAdapter;
-    }
-
-    /**
-     * @param useAdapter the useAdapter to set
-     */
-    public void setUseAdapter(boolean useAdapter) {
-        this.useAdapter = useAdapter;
-    }
-
+    
 }
