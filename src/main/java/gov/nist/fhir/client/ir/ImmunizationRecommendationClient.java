@@ -329,7 +329,7 @@ public class ImmunizationRecommendationClient {
         
 
         //       System.out.println(seri.it(patientParameter, "sut.xml"));
-        System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
+        //System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
         /*
         StringBuilder parameterXml = new StringBuilder();
         parameterXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Parameters xmlns=\"http://hl7.org/fhir\">");
@@ -473,8 +473,7 @@ public class ImmunizationRecommendationClient {
         if (body.trim().isEmpty()) {
             throw new ConnectionException(null, "Empty message returned.");
         }
-        System.out.println(
-                "COMING BACK!!!! " + body);
+        //System.out.println("COMING BACK!!!! " + body);
 
         String xml = body.substring(body.indexOf("<"));
 
