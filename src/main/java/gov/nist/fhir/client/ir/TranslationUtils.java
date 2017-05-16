@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import org.hl7.fhir.dstu3.model.CodeType;
+import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Immunization.ImmunizationVaccinationProtocolComponent;
 import org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationDateCriterionComponent;
 
@@ -301,10 +303,12 @@ public class TranslationUtils {
         af.setDoseNumber(Integer.toString(irr.getDoseNumber()));
         VaccineRef vaccineRef = new VaccineRef();
         if (irr.getVaccineCode() != null && irr.getVaccineCode().getCoding() != null
-                && irr.getVaccineCode().getCoding().size() > 1
+                && irr.getVaccineCode().getCoding().size() > 0
                 && irr.getVaccineCode().getCoding().get(0) != null
                 && irr.getVaccineCode().getCoding().get(0).getCode() != null) {
+            Coding ct = irr.getVaccineCode().getCoding().get(0);
             vaccineRef.setCvx(irr.getVaccineCode().getCoding().get(0).getCode());
+            
         }
         af.setVaccine(vaccineRef);
 

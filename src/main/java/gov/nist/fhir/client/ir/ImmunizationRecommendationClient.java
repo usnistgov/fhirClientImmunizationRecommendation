@@ -417,7 +417,6 @@ public class ImmunizationRecommendationClient {
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
 
-        //System.out.println("GOING OUT!" + outgoingXml);
         // HttpClient httpClient = HttpClientBuilder.create().build();             
         HttpClient httpClient = null;
         try {
