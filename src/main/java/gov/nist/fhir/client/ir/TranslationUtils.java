@@ -342,6 +342,9 @@ public class TranslationUtils {
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_LATEST:
                         af.setComplete(date.getDate());
                         break;
+                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED:
+                        af.setRecommended(date.getDate());
+                        break;                                                
                 }
             }
         }
