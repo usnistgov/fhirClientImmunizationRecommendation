@@ -36,31 +36,31 @@ public class TranslationUtils {
     public static final String IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_OVERDUE = "overdue";
     public static final String IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_LATEST = "latest";
     public static final String IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED = "recommended";
-
+    
     public static String translateCsdiDateToFhirDate(FixedDate date) {
         SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");
         return print.format(date.getDate());
     }
-
+    
     public static Date translateHl7DateToJavaDate(String date) throws ParseException {
-
+        
         DateFormat df = new SimpleDateFormat("yyy-MM-dd");
         return df.parse(date);
     }
-
+    
     public static String translateJavaDateToFhirDate(Date date) {
         SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");
         return print.format(date);
     }
-
+    
     public static FixedDate translateTchDateToFhirDate(String date) {
-
+        
         String year = date.substring(0, 4);
         String month = date.substring(5, 7);
         String day = date.substring(8, 10);
-
+        
         return new FixedDate(month + '/' + day + '/' + year);
-
+        
     }
 
     /*
@@ -105,20 +105,20 @@ public class TranslationUtils {
     }
      */
     public static ResponseVaccinationEvent translateImmunizationToResponseVaccinationEvent(org.hl7.fhir.dstu3.model.Immunization imm) {
-
+        
         ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
         VaccineRef vaccineRef = new VaccineRef();
-
+        
         if (imm.getVaccineCode() != null && imm.getVaccineCode().getCoding() != null
                 && imm.getVaccineCode().getCoding().get(0) != null
                 && imm.getVaccineCode().getCoding().get(0).getCode() != null) {
             vaccineRef.setCvx(imm.getVaccineCode().getCoding().get(0).getCode());
         }
         rve.setAdministred(vaccineRef);
-
+        
         rve.setDate(new FixedDate(imm.getDate()));
         rve.setEvaluations(new HashSet<ActualEvaluation>());
-
+        
         List<ImmunizationVaccinationProtocolComponent> vaccinationProtocols = imm.getVaccinationProtocol();
         Iterator<ImmunizationVaccinationProtocolComponent> it = vaccinationProtocols.iterator();
         while (it.hasNext()) {
@@ -130,7 +130,16 @@ public class TranslationUtils {
                     && ivp.getDoseStatus().getCoding().get(0).getCode() != null) {
                 status = ivp.getDoseStatus().getCoding().get(0).getCode();
             }
-            if ("Y".equalsIgnoreCase(status)) {
+                        
+            if ("Valid".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.VALID);
+            } else if ("Not Valid".equalsIgnoreCase("Not Valid")) {
+                ae.setStatus(EvaluationStatus.INVALID);
+            } else if ("Extraneous".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.EXTRANEOUS);
+            } else if ("Sub-standard".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.SUBSTANDARD);
+            } else if ("Y".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.VALID);
             } else {
                 ae.setStatus(EvaluationStatus.INVALID);
@@ -296,7 +305,6 @@ public class TranslationUtils {
         if (irr.getDate() == null || "".equals(irr.getDate())) {
             return null;
         }
-
         
         ActualForecast af = new ActualForecast();
         //TODO: Error checking
@@ -311,14 +319,14 @@ public class TranslationUtils {
             
         }
         af.setVaccine(vaccineRef);
-
+        
         List<ImmunizationRecommendationRecommendationDateCriterionComponent> dateCriterions = irr.getDateCriterion();
-
+        
         Iterator<ImmunizationRecommendationRecommendationDateCriterionComponent> it = dateCriterions.iterator();
         while (it.hasNext()) {
-
+            
             ImmunizationRecommendationRecommendationDateCriterionComponent dateCriterion = it.next();
-
+            
             if (dateCriterion.getValue() != null && dateCriterion.getValue() != null) {
                 FixedDate date = new FixedDate(dateCriterion.getValue());
 
@@ -344,7 +352,7 @@ public class TranslationUtils {
                         break;
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED:
                         af.setRecommended(date.getDate());
-                        break;                                                
+                        break;                    
                 }
             }
         }
@@ -375,7 +383,7 @@ public class TranslationUtils {
             }
         }
         return af;
-
+        
     }
     /*
     public static boolean doesRecommendationHaveDateCriterion(ImmunizationRecommendationRecommendation irr) {
