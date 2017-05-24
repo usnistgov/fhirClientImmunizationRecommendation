@@ -133,11 +133,11 @@ public class TranslationUtils {
                         
             if ("Valid".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.VALID);
-            } else if ("Not Valid".equalsIgnoreCase("Not Valid")) {
+            } else if ("Not Valid".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.INVALID);
             } else if ("Extraneous".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.EXTRANEOUS);
-            } else if ("Sub-standard".equalsIgnoreCase(status)) {
+            } else if ("Sub standard".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.SUBSTANDARD);
             } else if ("Y".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.VALID);
