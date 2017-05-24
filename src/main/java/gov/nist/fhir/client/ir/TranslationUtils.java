@@ -338,9 +338,9 @@ public class TranslationUtils {
                     status = dateCriterion.getCode().getCoding().get(0).getCode();
                 }
                 switch (status) {
-                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_DUE:
-                        af.setRecommended(date.getDate());
-                        break;
+                    //case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_DUE:
+//                        af.setRecommended(date.getDate());
+  //                      break;
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_EARLIEST:
                         af.setEarliest(date.getDate());
                         break;
