@@ -362,21 +362,44 @@ public class TranslationUtils {
                 && irr.getForecastStatus().getCoding().get(0).getCode() != null) {
             String status = irr.getForecastStatus().getCoding().get(0).getCode();
 
-            // TODO: Is this work around needed? Or is one just wrong?
+            
             try {
-                if (status.equals("Not Complete")) {
-                    af.setSerieStatus(SerieStatus.E);
-                } else if (status.equals("Aged Out")) {
-                    af.setSerieStatus(SerieStatus.G);
-                } else if (status.startsWith("o")) {
-                    af.setSerieStatus(SerieStatus.O);
-                } else if (status.equalsIgnoreCase("d")) {
+                if (status.equalsIgnoreCase("assumed complete or immune")){
+                    af.setSerieStatus(SerieStatus.A);
+                } else if (status.equalsIgnoreCase("complete")) {
+                    af.setSerieStatus(SerieStatus.C);
+                } else if (status.equalsIgnoreCase("due")) {
                     af.setSerieStatus(SerieStatus.D);
-                } else if (status.startsWith("u")) {
+                } else if(status.equalsIgnoreCase("error")) {
+                    af.setSerieStatus(SerieStatus.E);
+                } else if(status.equalsIgnoreCase("finished")) {
+                    af.setSerieStatus(SerieStatus.F);
+                } else if(status.equalsIgnoreCase("aged out")) {
+                    af.setSerieStatus(SerieStatus.G);                    
+                } else if(status.equalsIgnoreCase("immue")) {
+                    af.setSerieStatus(SerieStatus.I);
+                } else if(status.equalsIgnoreCase("due later")) {
+                    af.setSerieStatus(SerieStatus.L);
+                } else if(status.equalsIgnoreCase("not complete")) {
+                    af.setSerieStatus(SerieStatus.N);                    
+                } else if(status.equalsIgnoreCase("overdue")) {
+                    af.setSerieStatus(SerieStatus.O);                    
+                } else if(status.equalsIgnoreCase("no results")) {
+                    af.setSerieStatus(SerieStatus.R);
+                } else if(status.equalsIgnoreCase("complete for season")) {
+                    af.setSerieStatus(SerieStatus.S);
+                } else if(status.equalsIgnoreCase("unknown")) {
                     af.setSerieStatus(SerieStatus.U);
-                } else {
-                    af.setSerieStatus(SerieStatus.valueOf(status));
+                } else if(status.equalsIgnoreCase("Consider")) {
+                    af.setSerieStatus(SerieStatus.V);
+                } else if(status.equalsIgnoreCase("waivered")) {
+                    af.setSerieStatus(SerieStatus.W);
+                } else if(status.equalsIgnoreCase("contraindicated")) {
+                    af.setSerieStatus(SerieStatus.X);
+                } else if(status.equalsIgnoreCase("recommended but not required")) {
+                    af.setSerieStatus(SerieStatus.Z);
                 }
+
             } catch (Exception e) {
                 //TODO better error checking
                 System.out.println("Unexpected dose status = " + status);

@@ -270,8 +270,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://p860556.campus.nist.gov:8084/fhirAdapter/fhir/Parameters/$IR");
   //         TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:9443/fhirAdapter/fhir/Parameters/$cds-forecast");
        
-           TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
-       
+           //TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
+       TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
    //TestRunnerService test = new TestRunnerServiceFhirImpl("http://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -280,7 +280,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         config.setConnector(FHIRAdapter.TCH);
         //config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
-        //config.setConnector(FHIRAdapter.FHIR);
+  //      config.setConnector(FHIRAdapter.FHIR);
         config.setUser("TCH");
         //config.setUser("ice");
         //config.setUser("stc");
