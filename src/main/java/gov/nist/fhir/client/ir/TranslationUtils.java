@@ -130,11 +130,13 @@ public class TranslationUtils {
                     && ivp.getDoseStatus().getCoding().get(0).getCode() != null) {
                 status = ivp.getDoseStatus().getCoding().get(0).getCode();
             }
-                        
+            
+            System.out.println("Status for " + ivp.getSeries() + " = " + status);
             if ("Valid".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.VALID);
             } else if ("Not Valid".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.INVALID);
+                System.out.println("Setting " + ivp.getSeries() + " to EvaluationStatus.INVALID");
             } else if ("Extraneous".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.EXTRANEOUS);
             } else if ("Sub standard".equalsIgnoreCase(status)) {
