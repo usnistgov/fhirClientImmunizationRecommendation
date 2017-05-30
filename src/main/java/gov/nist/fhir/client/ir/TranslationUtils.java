@@ -122,7 +122,7 @@ public class TranslationUtils {
         List<ImmunizationVaccinationProtocolComponent> vaccinationProtocols = imm.getVaccinationProtocol();
         Iterator<ImmunizationVaccinationProtocolComponent> it = vaccinationProtocols.iterator();
         while (it.hasNext()) {
-            ImmunizationVaccinationProtocolComponent ivp = it.next();
+            ImmunizationVaccinationProtocolComponent ivp = it.next();            
             ActualEvaluation ae = new ActualEvaluation();
             String status = "";
             if (ivp.getDoseStatus() != null && ivp.getDoseStatus().getCoding() != null
@@ -147,10 +147,17 @@ public class TranslationUtils {
                 ae.setStatus(EvaluationStatus.INVALID);
             }
             VaccineRef vr = new VaccineRef();
+            
+            /*
             if (ivp.getSeries() != null) {
                 vr.setCvx(ivp.getSeries());
+            }*/
+            if(ivp.getTargetDiseaseFirstRep() != null && ivp.getTargetDiseaseFirstRep().getCodingFirstRep() != null
+                    && ivp.getTargetDiseaseFirstRep().getCodingFirstRep().getCode() !=  null) {
+                vr.setCvx(ivp.getTargetDiseaseFirstRep().getCodingFirstRep().getCode());
             }
-            ae.setVaccine(vr);
+            
+            ae.setVaccine(vr);            
             rve.getEvaluations().add(ae);
         }
         return rve;
