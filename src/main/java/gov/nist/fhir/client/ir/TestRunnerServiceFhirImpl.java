@@ -107,7 +107,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-           // response.setRequest(ImmunizationRecommendationClient.generateXml(routing, sendingConfig, useAdapter));
+           // response.setRequest(ImmunizationRecommendationClient.generatePayload(routing, sendingConfig, useAdapter));
             Serialize serial = new Serialize();
             response.setResponse(serial.it(result, "sut.xml"));
 
@@ -132,7 +132,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 */
             org.hl7.fhir.dstu3.model.Parameters parameters = null;
             try {
-                parameters = (org.hl7.fhir.dstu3.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter);
+                parameters = (org.hl7.fhir.dstu3.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
             } catch (IOException ex) {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
             } catch (KeyStoreException ex) {
@@ -271,27 +271,27 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
   //         TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:9443/fhirAdapter/fhir/Parameters/$cds-forecast");
        
            //TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
-       TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+     //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
    //TestRunnerService test = new TestRunnerServiceFhirImpl("http://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
-//TestRunnerService test = new TestRunnerServiceFhirImpl();
+TestRunnerService test = new TestRunnerServiceFhirImpl();
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();
-        config.setConnector(FHIRAdapter.TCH);
+//        config.setConnector(FHIRAdapter.TCH);
         //config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
-  //      config.setConnector(FHIRAdapter.FHIR);
+        config.setConnector(FHIRAdapter.FHIR);
   //      config.setUser("TCH");
         //config.setUser("ice");
         //config.setUser("stc");
         
-        config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+  //      config.setEndPoint("http://tchforecasttester.org/fv/forecast");
         //config.setEndPoint("https://cds.hln.com/opencds-decision-support-service/evaluate?wsdl");
         
         //config.setEndPoint("http://epicenter.stchome.com/safdemo/soa/forecast/getForecast.wsdl");
         
         
-    //    config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
+        config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
 
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
