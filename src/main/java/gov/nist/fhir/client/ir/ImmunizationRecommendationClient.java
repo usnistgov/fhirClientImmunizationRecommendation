@@ -587,7 +587,8 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
 
         ImmunizationRecommendationClient irc = new ImmunizationRecommendationClient();
         Routing routing = new Routing();
-        routing.setFhirAdapterUrl("https://localhost:8443/forecast/ImmunizationRecommendations");
+        //routing.setFhirAdapterUrl("https://localhost:8443/forecast/ImmunizationRecommendations");
+        routing.setFhirAdapterUrl("http://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         routing.setForecastType("TCH");
         //  routing.setForecastUrl("http://tchforecasttester.org/fv/forecast");
         routing.setForecastUrl("https://test-cdsi.rhcloud.com/CDSi/cds-forecast");

@@ -23,6 +23,7 @@ import org.hl7.fhir.dstu3.model.CodeType;
 import org.hl7.fhir.dstu3.model.Coding;
 import org.hl7.fhir.dstu3.model.Immunization.ImmunizationVaccinationProtocolComponent;
 import org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationDateCriterionComponent;
+import org.hl7.fhir.dstu3.model.Reference;
 
 /**
  *
@@ -379,8 +380,10 @@ public class TranslationUtils {
                     af.setSerieStatus(SerieStatus.C);
                 } else if (status.equalsIgnoreCase("due")) {
                     af.setSerieStatus(SerieStatus.D);
-                } else if(status.equalsIgnoreCase("error")) {
-                    af.setSerieStatus(SerieStatus.E);
+                    //TODO : Find out what happened to E and R?
+                    
+//                } else if(status.equalsIgnoreCase("error")) {
+//                    af.setSerieStatus(SerieStatus.E);
                 } else if(status.equalsIgnoreCase("finished")) {
                     af.setSerieStatus(SerieStatus.F);
                 } else if(status.equalsIgnoreCase("aged out")) {
@@ -393,8 +396,8 @@ public class TranslationUtils {
                     af.setSerieStatus(SerieStatus.N);                    
                 } else if(status.equalsIgnoreCase("overdue")) {
                     af.setSerieStatus(SerieStatus.O);                    
-                } else if(status.equalsIgnoreCase("no results")) {
-                    af.setSerieStatus(SerieStatus.R);
+//                } else if(status.equalsIgnoreCase("no results")) {
+//                    af.setSerieStatus(SerieStatus.R);
                 } else if(status.equalsIgnoreCase("complete for season")) {
                     af.setSerieStatus(SerieStatus.S);
                 } else if(status.equalsIgnoreCase("unknown")) {
@@ -430,4 +433,16 @@ public class TranslationUtils {
 
     }
      */
+    
+    public static void main(String[] args) {
+        org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irr = null;
+        
+        
+        //org.hl7.fhir.dstu3.model.Immunization imm = (org.hl7.fhir.dstu3.model.Immunization) irr.getSupportingImmunizationFirstRep();
+        Reference ref = irr.getSupportingImmunizationFirstRep();
+    
+                
+    }
+    
+    
 }
