@@ -87,7 +87,9 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 imm.setDate(TranslationUtils.translateJavaDateToFhirDate(immDate));
                 // TODO: Check. Reference to patient no longer exists???
                 //imm.setPatientReference(tc.getPatient().getId());
-                imm.setVaccineCode(event.getRef().getCvx());
+                
+                imm.setVaccineCode(event.getRef().getCvx());                
+                imm.setManufactorer(event.getRef().getMvx());
                 imms.add(imm);
             }
         }
@@ -342,6 +344,7 @@ config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
   
         VaccineRef vr2 = new VaccineRef();
         vr2.setCvx("110");
+        vr2.setMvx("AB");
         tc.addImmunization(vr2, immDate2);
 /*
         VaccineRef vr3 = new VaccineRef();
@@ -356,6 +359,9 @@ config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
         //tc.setEvents(events);
         //tc.setImmunizations(events);
         
+        
+        
+        
         EngineResponse run = null;
         try {
             run = test.run(config, tc);
@@ -364,6 +370,9 @@ config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
             System.out.println("Exception\nStatus Code = " + ex.getStatusCode());
             System.out.println("Status Text = " + ex.getStatusText());
         }
+        
+        System.out.println(run.getResponse());
+        
         System.out.println(run.getForecasts().size());
         System.out.println(run.getEvents().size());
         //System.out.println(run.getResponse());

@@ -19,7 +19,9 @@ import java.text.ParseException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -128,6 +130,24 @@ public class ImmunizationRecommendationClient {
         }
         patientParametersParameterFhir.setResource(patientFhir);
         parametersFhir.addParameter(patientParametersParameterFhir);
+        
+        Set<String> mvx = ImmunizationRecommendationClient.getUniqueMvx(sendingConfig);
+        if(mvx != null && !mvx.isEmpty()) {
+            Iterator<String> mvxIt = mvx.iterator();
+            while(mvxIt.hasNext()) {
+                String mvxString = mvxIt.next();
+                org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent mvxParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();    
+                mvxParametersParameterFhir.setName(mvxString);
+                org.hl7.fhir.dstu3.model.Organization organizationFhir = new org.hl7.fhir.dstu3.model.Organization();  
+                organizationFhir.setId(mvxString);
+                org.hl7.fhir.dstu3.model.Identifier identifierFhir = new org.hl7.fhir.dstu3.model.Identifier();
+                identifierFhir.setValue(mvxString);
+                organizationFhir.addIdentifier(identifierFhir);
+                mvxParametersParameterFhir.setResource(organizationFhir);
+                parametersFhir.addParameter(mvxParametersParameterFhir);
+            }
+        }
+        
         //  }
 
         if (useAdapter) {
@@ -263,6 +283,12 @@ public class ImmunizationRecommendationClient {
                 vaccineFhir.addCoding(code);
                 immunizationFhir.setVaccineCode(vaccineFhir);
                 immunizationFhir.setStatus(org.hl7.fhir.dstu3.model.Immunization.ImmunizationStatus.COMPLETED);
+                if(immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
+                    org.hl7.fhir.dstu3.model.Reference manufacturerReference = new org.hl7.fhir.dstu3.model.Reference();
+                    manufacturerReference.setReference(immunization.getManufactorer());
+                    immunizationFhir.setManufacturer(manufacturerReference);
+                }
+                
                 org.hl7.fhir.dstu3.model.Reference patientReference = new org.hl7.fhir.dstu3.model.Reference();
                 patientReference.setReference(patientId);
                 immunizationFhir.setPatient(patientReference);
@@ -407,7 +433,11 @@ public class ImmunizationRecommendationClient {
         }
         String outgoingXml = ImmunizationRecommendationClient.generatePayload(routing, sendingConfig, useAdapter, format);
         StringEntity paramsXml = new StringEntity(outgoingXml);
-        //System.out.println(convertStreamToString(paramsXml.getContent()));
+     //   try {
+     //       System.out.println("OUTGOING? " + convertStreamToString(paramsXml.getContent()));
+     //   } catch (IOException ex) {
+     //       Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+     //   }
         request.addHeader("content-type", "application/xml; charset=utf8");
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
@@ -497,6 +527,23 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
     private static String convertStreamToString(java.io.InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
+    }
+
+    private static Set<String> getUniqueMvx(SendingConfig sendingConfig) {
+        
+        Set<String> mvx = new HashSet<>();
+        Collection<Immunization> imms = sendingConfig.getImmunizationData();        
+        if (imms == null) return mvx;        
+        Iterator<Immunization> it = imms.iterator();
+        while(it.hasNext()) {            
+            Immunization imm = it.next();
+            if(imm.getManufactorer() != null && !imm.getManufactorer().isEmpty())
+                mvx.add(imm.getManufactorer());            
+        }
+        
+        return mvx;
+        
+        
     }
 
     public Object getImmunizationRecommendation(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format) throws IOException, UnsupportedEncodingException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ConnectionException {

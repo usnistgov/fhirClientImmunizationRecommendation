@@ -17,6 +17,7 @@ public class Immunization {
     private String vaccineCode = null;
     private String patientReference = null;
     private String date = null;
+    private String manufactorer = null;
     private Boolean wasNotGiven = null;
     private Boolean reported = null;
     private TestEvent testEvent = null;
@@ -103,6 +104,20 @@ public class Immunization {
      */
     public void setDate(String date) {
         this.date = date;
+    }
+
+    /**
+     * @return the manufactorer
+     */
+    public String getManufactorer() {
+        return manufactorer;
+    }
+
+    /**
+     * @param manufactorer the manufactorer to set
+     */
+    public void setManufactorer(String manufactorer) {
+        this.manufactorer = manufactorer;
     }
     
     
