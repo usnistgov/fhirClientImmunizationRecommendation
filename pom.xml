@@ -32,7 +32,7 @@
 -->
         
 
-        
+        <!--
         
         <dependency>
             <groupId>gov.nist.healthcare.cds</groupId>
@@ -44,7 +44,7 @@
             <artifactId>cds-base-domain</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        
+        -->
         <!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-base -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
@@ -66,6 +66,16 @@
             <groupId>org.tch.fc</groupId>
             <artifactId>ForecastConnector</artifactId>
             <version>3.09</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.nist.healthcare.cds</groupId>
+            <artifactId>cds-base-domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.nist.healthcare.cds</groupId>
+            <artifactId>cds-base-service</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     
