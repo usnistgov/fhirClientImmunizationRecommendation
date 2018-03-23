@@ -130,7 +130,7 @@ public class ImmunizationRecommendationClient {
         }
         patientParametersParameterFhir.setResource(patientFhir);
         parametersFhir.addParameter(patientParametersParameterFhir);
-        
+        /*
         Set<String> mvx = ImmunizationRecommendationClient.getUniqueMvx(sendingConfig);
         if(mvx != null && !mvx.isEmpty()) {
             Iterator<String> mvxIt = mvx.iterator();
@@ -147,7 +147,7 @@ public class ImmunizationRecommendationClient {
                 parametersFhir.addParameter(mvxParametersParameterFhir);
             }
         }
-        
+        */
         //  }
 
         if (useAdapter) {
@@ -268,6 +268,38 @@ public class ImmunizationRecommendationClient {
                 org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
                 immunizationParametersParameterFhir.setName(Consts.PARAMETER_NAME_IMMUNIZATION);
                 org.hl7.fhir.dstu3.model.Immunization immunizationFhir = new org.hl7.fhir.dstu3.model.Immunization();
+                System.out.println("OUTSIDE!");
+                // Adding MVX org
+               org.hl7.fhir.dstu3.model.Organization mvxOrg = new org.hl7.fhir.dstu3.model.Organization();
+
+                if(immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
+                    System.out.println("INSIDE!");
+                    
+                    
+                    mvxOrg.getIdentifierFirstRep().setValue(immunization.getManufactorer());
+                    
+                    
+                    
+                    /*
+                    org.hl7.fhir.dstu3.model.Organization mvxOrg = new org.hl7.fhir.dstu3.model.Organization();
+                    mvxOrg.setId(immunization.getManufactorer());
+                    org.hl7.fhir.dstu3.model.Identifier mvxIdentifier = new org.hl7.fhir.dstu3.model.Identifier();
+                    mvxIdentifier.setValue(immunization.getManufactorer());
+                    ArrayList<org.hl7.fhir.dstu3.model.Identifier> identifiers = new ArrayList<org.hl7.fhir.dstu3.model.Identifier>();
+                    identifiers.add(mvxIdentifier);
+                    mvxOrg.setIdentifier(identifiers);
+                    ArrayList<org.hl7.fhir.dstu3.model.Resource> organizations = new ArrayList<org.hl7.fhir.dstu3.model.Resource>();
+                    organizations.add(mvxOrg);
+                    immunizationFhir.setContained(organizations);
+                    
+                    
+                    System.out.println("Has contained??? " + immunizationFhir.hasContained());
+                    
+                    System.out.println("OUTPUTHERE!!!" + ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(immunizationFhir));
+                    */
+                    
+                }
+                
                 immunizationFhir.setId(UUID.randomUUID().toString());
                 try {
                     immunizationFhir.setDate(TranslationUtils.translateHl7DateToJavaDate(immunization.getDate()));
@@ -284,9 +316,13 @@ public class ImmunizationRecommendationClient {
                 immunizationFhir.setVaccineCode(vaccineFhir);
                 immunizationFhir.setStatus(org.hl7.fhir.dstu3.model.Immunization.ImmunizationStatus.COMPLETED);
                 if(immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
-                    org.hl7.fhir.dstu3.model.Reference manufacturerReference = new org.hl7.fhir.dstu3.model.Reference();
-                    manufacturerReference.setReference(immunization.getManufactorer());
-                    immunizationFhir.setManufacturer(manufacturerReference);
+                    //org.hl7.fhir.dstu3.model.Reference manufacturerReference = new org.hl7.fhir.dstu3.model.Reference();
+                    //manufacturerReference.setReference(immunization.getManufactorer());
+                    //immunizationFhir.setManufacturer(manufacturerReference);
+                    immunizationFhir.getManufacturer().setResource(mvxOrg);
+                            
+                            
+                            //patient.getManagingOrganization().setResource(org);
                 }
                 
                 org.hl7.fhir.dstu3.model.Reference patientReference = new org.hl7.fhir.dstu3.model.Reference();
@@ -433,11 +469,11 @@ public class ImmunizationRecommendationClient {
         }
         String outgoingXml = ImmunizationRecommendationClient.generatePayload(routing, sendingConfig, useAdapter, format);
         StringEntity paramsXml = new StringEntity(outgoingXml);
-     //   try {
-     //       System.out.println("OUTGOING? " + convertStreamToString(paramsXml.getContent()));
-     //   } catch (IOException ex) {
-     //       Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
-     //   }
+        try {
+            System.out.println("OUTGOING? " + convertStreamToString(paramsXml.getContent()));
+        } catch (IOException ex) {
+            Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
         request.addHeader("content-type", "application/xml; charset=utf8");
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
