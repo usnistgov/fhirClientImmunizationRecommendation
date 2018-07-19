@@ -280,28 +280,40 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
     
   //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
    
-   TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
+  // TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
+   
+  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+   
+ // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
    
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();
-        config.setConnector(FHIRAdapter.MA);
+        config.setConnector(FHIRAdapter.MA);      
+      //  config.setConnector(FHIRAdapter.SWP);      
         //config.setConnector(FHIRAdapter.TCH);
-        //config.setConnector(FHIRAdapter.ICE);
+      //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
       //  config.setConnector(FHIRAdapter.FHIR);
   //      config.setUser("TCH");
         //config.setUser("ice");
         //config.setUser("stc");
         
- //       config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-        //config.setEndPoint("https://cds.hln.com/opencds-decision-support-service/evaluate?wsdl");
+        config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
+        //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
+        //config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+  //      config.setEndPoint("https://cds.hln.com/opencds-decision-support-service/evaluate?wsdl");
         
         //config.setEndPoint("http://epicenter.stchome.com/safdemo/soa/forecast/getForecast.wsdl");
         
         
   //      config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
-config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
+//config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
+
+
+//config.setEndPoint("http://immlab.pagekite.me/opencds-decision-support-service/evaluate?wsdl");
+
+
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
         //patient.setDob(dob);
