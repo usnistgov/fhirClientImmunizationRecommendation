@@ -39,8 +39,9 @@ public class TranslationUtils {
     public static final String IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED = "recommended";
     
     public static String translateCsdiDateToFhirDate(FixedDate date) {
-        SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");
-        return print.format(date.getDate());
+        SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");        
+        //Format changed 9/5/2018
+        return print.format(date.asDate());
     }
     
     public static Date translateHl7DateToJavaDate(String date) throws ParseException {
@@ -351,17 +352,18 @@ public class TranslationUtils {
                     //case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_DUE:
 //                        af.setRecommended(date.getDate());
   //                      break;
+                    // Date format changed 9/5/2018
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_EARLIEST:
-                        af.setEarliest(date.getDate());
+                        af.setEarliest(date.asDate());
                         break;
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_OVERDUE:
-                        af.setPastDue(date.getDate());
+                        af.setPastDue(date.asDate());
                         break;
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_LATEST:
-                        af.setComplete(date.getDate());
+                        af.setComplete(date.asDate());
                         break;
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED:
-                        af.setRecommended(date.getDate());
+                        af.setRecommended(date.asDate());
                         break;                    
                 }
             }
