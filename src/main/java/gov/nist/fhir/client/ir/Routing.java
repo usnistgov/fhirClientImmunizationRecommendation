@@ -14,6 +14,9 @@ public class Routing {
     private String forecastUrl = null;
     private String forecastType = null;
     private String fhirAdapterUrl = null;
+    private String userId = null;
+    private String facilityId = null;
+    private String password = null;
 
     /**
      * @return the forecastUrl
@@ -55,6 +58,48 @@ public class Routing {
      */
     public void setFhirAdapterUrl(String fhirAdapterUrl) {
         this.fhirAdapterUrl = fhirAdapterUrl;
+    }
+
+    /**
+     * @return the userId
+     */
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * @param userId the userId to set
+     */
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * @return the facilityId
+     */
+    public String getFacilityId() {
+        return facilityId;
+    }
+
+    /**
+     * @param facilityId the facilityId to set
+     */
+    public void setFacilityId(String facilityId) {
+        this.facilityId = facilityId;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
     
 }
