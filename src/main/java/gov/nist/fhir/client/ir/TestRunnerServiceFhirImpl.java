@@ -90,8 +90,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 imm.setDate(TranslationUtils.translateJavaDateToFhirDate(immDate));
                 // TODO: Check. Reference to patient no longer exists???
                 //imm.setPatientReference(tc.getPatient().getId());
-                
-                imm.setVaccineCode(event.getRef().getCvx());                
+
+                imm.setVaccineCode(event.getRef().getCvx());
                 imm.setManufactorer(event.getRef().getMvx());
                 imms.add(imm);
             }
@@ -134,37 +134,38 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
             }
         } else {
-*/
-            org.hl7.fhir.dstu3.model.Parameters parameters = null;
-            try {
-                parameters = (org.hl7.fhir.dstu3.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
-            } catch (IOException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (KeyStoreException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchAlgorithmException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (KeyManagementException ex) {
-                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
+         */
+        org.hl7.fhir.dstu3.model.Parameters parameters = null;
+        try {
+            parameters = (org.hl7.fhir.dstu3.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
+        } catch (IOException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KeyStoreException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (KeyManagementException ex) {
+            Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-            FhirContext ctx = FhirContext.forDstu3();
-            String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parameters);
-            response.setResponse(raw);
-            
-      //      System.out.println("COMING BACK = \n" + raw);
-            
-            //TODO: Error checking
-            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameter = parameters.getParameter().get(0);
+        FhirContext ctx = FhirContext.forDstu3();
+        String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parameters);
+        response.setResponse(raw);
 
-            org.hl7.fhir.dstu3.model.ImmunizationRecommendation ir = (org.hl7.fhir.dstu3.model.ImmunizationRecommendation) parameter.getResource();
+        //      System.out.println("COMING BACK = \n" + raw);
+        //TODO: Error checking
+        org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameter = parameters.getParameter().get(0);
+
+        org.hl7.fhir.dstu3.model.ImmunizationRecommendation ir = (org.hl7.fhir.dstu3.model.ImmunizationRecommendation) parameter.getResource();
+        if (ir != null) {
             List<ImmunizationRecommendationRecommendationComponent> irrs = ir.getRecommendation();
             Iterator<ImmunizationRecommendationRecommendationComponent> it = irrs.iterator();
             while (it.hasNext()) {
                 ImmunizationRecommendationRecommendationComponent irr = it.next();
                 ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecast(irr);
-                if(af != null)
+                if (af != null) {
                     response.getForecasts().add(af);
+                }
             }
 
             List<Resource> containeds = ir.getContained();
@@ -177,13 +178,15 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                     org.hl7.fhir.dstu3.model.Immunization imm = (org.hl7.fhir.dstu3.model.Immunization) rc;
                     if (imm != null) {
                         ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationToResponseVaccinationEvent(imm);
-                        if (rve != null)
+                        if (rve != null) {
                             response.getEvents().add(rve);
+                        }
                     }
                 }
 
             }
-            /*
+        }
+        /*
 
             Parameters parameters = null;
             try {
@@ -229,8 +232,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 }
 
             }
-             */
-       // }
+         */
+        // }
         return response;
     }
 
@@ -262,65 +265,51 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         this.useAdapter = useAdapter;
     }
 
-    
-    
     public static void main(String[] args) throws IOException, ConnectionException {
-        
 
         //   TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8080/forecast/ImmunizationRecommendations");
         //    TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:8443/forecast/ImmunizationRecommendations");
-
         //TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhir/ImmunizationRecommendation");
 //        TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhir/Parameters/$IR");
-            //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://p860556.campus.nist.gov:8084/fhirAdapter/fhir/Parameters/$IR");
-  //         TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:9443/fhirAdapter/fhir/Parameters/$cds-forecast");
-       
-           //TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
-     //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
-    //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
-    
-    
-    
-  //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
-   
-   TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-   
- // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
-   
- // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
-   
+        //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://p860556.campus.nist.gov:8084/fhirAdapter/fhir/Parameters/$IR");
+        //         TestRunnerService test = new TestRunnerServiceFhirImpl("https://p860556.campus.nist.gov:9443/fhirAdapter/fhir/Parameters/$cds-forecast");
+        //TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
+        //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+        //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
+        //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
+        // TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
+        TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+
+        // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
         SoftwareConfig config = new SoftwareConfig();
         TestCasePayLoad tc = new TestCasePayLoad();
-    //    config.setConnector(FHIRAdapter.MA);      
-      //  config.setConnector(FHIRAdapter.SWP);      
-        config.setConnector(FHIRAdapter.TCH);
-        
- //       config.setConnector(FHIRAdapter.HL7);
-      //  config.setConnector(FHIRAdapter.ICE);
+        //    config.setConnector(FHIRAdapter.MA);      
+        //  config.setConnector(FHIRAdapter.SWP);      
+        //  config.setConnector(FHIRAdapter.TCH);
+
+        config.setConnector(FHIRAdapter.HL7);
+        //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
-      //  config.setConnector(FHIRAdapter.FHIR);
-  //      config.setUser("TCH");
+        //  config.setConnector(FHIRAdapter.FHIR);
+        //      config.setUser("TCH");
         //config.setUser("ice");
         //config.setUser("stc");
-        
-    //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
+
+        //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
-        config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-  //      config.setEndPoint("https://cds.hln.com/opencds-decision-support-service/evaluate?wsdl");
-        
+        //     config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+        config.setEndPoint("http://imm.pagekite.me/aart/soap");
+        //    config.setEndPoint("http://imm.pagekite.me/iis-kernel/soap");
+        //      config.setEndPoint("https://cds.hln.com/opencds-decision-support-service/evaluate?wsdl");
+
         //config.setEndPoint("http://epicenter.stchome.com/safdemo/soa/forecast/getForecast.wsdl");
-        
-        
-  //      config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
+        //      config.setEndPoint("http://test-cdsi.rhcloud.com/CDSi/cds-forecast");
 //config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
-
-
 //config.setEndPoint("http://immlab.pagekite.me/opencds-decision-support-service/evaluate?wsdl");
-
-config.setUserId("User1234");
-config.setFacilityId("Facility7");
-config.setPassword("BadPassword");
+        config.setUserId("TEMP_CONN");
+        config.setFacilityId("66D");
+        config.setPassword("8KCX1UCU7RZSUCY5HBR");
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
         //patient.setDob(dob);
@@ -339,11 +328,7 @@ config.setPassword("BadPassword");
         tc.setEvaluationDate(evalDate);
         tc.setDateOfBirth(dobDate);
 
-        
-
-         
         //List<VaccinationEventPayLoad> vaccinationEvents = new ArrayList<VaccinationEventPayLoad>();
-        
         Calendar immCal1 = Calendar.getInstance();
         immCal1.set(2012, 10, 5);
         Date immDate1 = immCal1.getTime();
@@ -351,7 +336,7 @@ config.setPassword("BadPassword");
         Calendar immCal2 = Calendar.getInstance();
         immCal2.set(2009, 12, 9);
         Date immDate2 = immCal2.getTime();
-/*
+        /*
         Calendar immCal3 = Calendar.getInstance();
         immCal3.set(2010, 4, 9);
         Date immDate3 = immCal3.getTime();
@@ -359,16 +344,16 @@ config.setPassword("BadPassword");
         Calendar immCal4 = Calendar.getInstance();
         immCal4.set(2010, 10, 5);
         Date immDate4 = immCal4.getTime();
-*/
+         */
         VaccineRef vr1 = new VaccineRef();
         vr1.setCvx("49");
         tc.addImmunization(vr1, immDate1);
-  
+
         VaccineRef vr2 = new VaccineRef();
         vr2.setCvx("110");
         vr2.setMvx("AB");
         tc.addImmunization(vr2, immDate2);
-/*
+        /*
         VaccineRef vr3 = new VaccineRef();
         vr3.setCvx("110");
         tc.addImmunization(vr3, immDate3);
@@ -376,14 +361,11 @@ config.setPassword("BadPassword");
         VaccineRef vr4 = new VaccineRef();
         vr4.setCvx("110");
         tc.addImmunization(vr4, immDate4);
-    */     
+         */
         // http://tchforecasttester.org/fv/forecast?evalDate=20170101&evalSchedule=&resultFormat=text&patientDob=20160101&patientSex=F&vaccineDate1=20170101&vaccineCvx1=110
         //tc.setEvents(events);
         //tc.setImmunizations(events);
-        
-        
-        
-        
+
         EngineResponse run = null;
         try {
             run = test.run(config, tc);
@@ -392,14 +374,13 @@ config.setPassword("BadPassword");
             System.out.println("Exception\nStatus Code = " + ex.getStatusCode());
             System.out.println("Status Text = " + ex.getStatusText());
         }
-        
+
         System.out.println(run.getResponse());
-        
+
         System.out.println(run.getForecasts().size());
         System.out.println(run.getEvents().size());
         //System.out.println(run.getResponse());
-        
+
     }
 
-    
 }
