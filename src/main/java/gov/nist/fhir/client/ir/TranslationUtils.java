@@ -39,8 +39,7 @@ public class TranslationUtils {
     public static final String IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED = "recommended";
     
     public static String translateCsdiDateToFhirDate(FixedDate date) {
-        SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");        
-        //Format changed 9/5/2018
+        SimpleDateFormat print = new SimpleDateFormat("yyyy-MM-dd");
         return print.format(date.asDate());
     }
     
@@ -352,7 +351,6 @@ public class TranslationUtils {
                     //case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_DUE:
 //                        af.setRecommended(date.getDate());
   //                      break;
-                    // Date format changed 9/5/2018
                     case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_EARLIEST:
                         af.setEarliest(date.asDate());
                         break;
@@ -390,7 +388,7 @@ public class TranslationUtils {
                     af.setSerieStatus(SerieStatus.F);
                 } else if(status.equalsIgnoreCase("aged out")) {
                     af.setSerieStatus(SerieStatus.G);                    
-                } else if(status.equalsIgnoreCase("immue")) {
+                } else if(status.equalsIgnoreCase("immune")) {
                     af.setSerieStatus(SerieStatus.I);
                 } else if(status.equalsIgnoreCase("due later")) {
                     af.setSerieStatus(SerieStatus.L);
