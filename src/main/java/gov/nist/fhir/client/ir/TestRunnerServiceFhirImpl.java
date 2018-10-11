@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent;
 import org.hl7.fhir.dstu3.model.Resource;
+import org.hl7.fhir.dstu3.model.StringType;
 
 /**
  *
@@ -186,6 +187,19 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
             }
         }
+        
+        try {
+            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterLog = parameters.getParameter().get(1);
+            
+            StringType log = (StringType) parameterLog.getValue();
+            //System.out.println("This is the TCH log = " + log.getValue());            
+            response.setLogs(log.getValue());
+            
+        } catch (Exception e)  {
+            //TODO: If no log... Make this better
+            e.printStackTrace();
+        }
+        
         /*
 
             Parameters parameters = null;
@@ -277,8 +291,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
-        // TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-        TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+         TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
+   //     TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
         // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -286,9 +300,9 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         TestCasePayLoad tc = new TestCasePayLoad();
         //    config.setConnector(FHIRAdapter.MA);      
         //  config.setConnector(FHIRAdapter.SWP);      
-        //  config.setConnector(FHIRAdapter.TCH);
+          config.setConnector(FHIRAdapter.TCH);
 
-        config.setConnector(FHIRAdapter.HL7);
+        //config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
         //  config.setConnector(FHIRAdapter.FHIR);
@@ -298,8 +312,11 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
         //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
-        //     config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-        config.setEndPoint("http://imm.pagekite.me/aart/soap");
+            config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+        
+        
+        
+      //  config.setEndPoint("http://imm.pagekite.me/aart/soap");
         //    config.setEndPoint("http://imm.pagekite.me/iis-kernel/soap");
         //      config.setEndPoint("https://cds.hln.com/opencds-decision-support-service/evaluate?wsdl");
 
@@ -309,7 +326,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 //config.setEndPoint("http://immlab.pagekite.me/opencds-decision-support-service/evaluate?wsdl");
         config.setUserId("TEMP_CONN");
         config.setFacilityId("66D");
-        config.setPassword("8KCX1UCU7RZSUCY5HBR");
+        config.setPassword("Q9GQZWYJXJHV2JGX2ZB");
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
         //patient.setDob(dob);
@@ -380,6 +397,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         System.out.println(run.getForecasts().size());
         System.out.println(run.getEvents().size());
         //System.out.println(run.getResponse());
+        
+        System.out.println("These are the logs of... " + run.getLogs());
 
     }
 
