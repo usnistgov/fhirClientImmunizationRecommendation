@@ -1,10 +1,12 @@
 package gov.nist.fhir.client.ir;
 
 import ca.uhn.fhir.context.FhirContext;
+import gov.nist.fhir.client.ir.tch.TchUtils;
 import gov.nist.healthcare.cds.domain.wrapper.ActualForecast;
 import gov.nist.healthcare.cds.domain.SoftwareConfig;
 import gov.nist.healthcare.cds.domain.exception.ConnectionException;
 import gov.nist.healthcare.cds.domain.wrapper.EngineResponse;
+import gov.nist.healthcare.cds.domain.wrapper.ExecutionIssue;
 import gov.nist.healthcare.cds.domain.wrapper.ResponseVaccinationEvent;
 import gov.nist.healthcare.cds.domain.wrapper.TestCasePayLoad;
 import gov.nist.healthcare.cds.domain.wrapper.TestCasePayLoad.VaccinationEventPayLoad;
@@ -189,6 +191,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         }
         
         try {
+            //TODO: Do better than going by order of paramters
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterLog = parameters.getParameter().get(1);
             
             StringType log = (StringType) parameterLog.getValue();
@@ -200,6 +203,29 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             e.printStackTrace();
         }
         
+
+        try {
+            //TODO: Do better than going by order of paramters
+            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterIssue = parameters.getParameter().get(2);
+            
+            StringType issues = (StringType) parameterIssue.getValue();
+            //System.out.println("This is the TCH log = " + log.getValue());  
+            if(issues != null) {
+                String issueString = issues.getValue();
+                List<ExecutionIssue> executionIssues = TchUtils.convertStringToExecutionIssues(issueString);
+                
+                response.setIssues(executionIssues);
+            } else {
+                response.setIssues(new ArrayList<>());
+            }
+//            response.setLogs(log.getValue());
+  //          response.s
+        } catch (Exception e)  {
+            //TODO: If no log... Make this better
+            e.printStackTrace();
+        }
+
+
         /*
 
             Parameters parameters = null;
@@ -292,7 +318,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
          TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-   //     TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+       // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
         // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -400,6 +426,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         
         System.out.println("These are the logs of... " + run.getLogs());
 
+        System.out.println("issues length = " + run.getIssues().size());
+        
     }
 
 }

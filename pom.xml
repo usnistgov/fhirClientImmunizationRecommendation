@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.tch.fc</groupId>
             <artifactId>ForecastConnector</artifactId>
-            <version>3.12</version>
+            <version>3.13</version>
         </dependency>
     </dependencies>
     
