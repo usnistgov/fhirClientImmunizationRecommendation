@@ -116,8 +116,8 @@ public class TranslationUtils {
             vaccineRef.setCvx(imm.getVaccineCode().getCoding().get(0).getCode());
         }
         rve.setAdministred(vaccineRef);
-        
-        rve.setDate(new FixedDate(imm.getDate()));
+        if(imm.getDate() != null)
+            rve.setDate(new FixedDate(imm.getDate()));
         rve.setEvaluations(new HashSet<ActualEvaluation>());
         
         List<ImmunizationVaccinationProtocolComponent> vaccinationProtocols = imm.getVaccinationProtocol();

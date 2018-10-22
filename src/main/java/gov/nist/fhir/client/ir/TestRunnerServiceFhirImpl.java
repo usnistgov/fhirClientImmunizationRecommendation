@@ -318,7 +318,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
          TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-       // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+      //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
         // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -326,8 +326,10 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         TestCasePayLoad tc = new TestCasePayLoad();
         //    config.setConnector(FHIRAdapter.MA);      
         //  config.setConnector(FHIRAdapter.SWP);      
-          config.setConnector(FHIRAdapter.TCH);
-
+         config.setConnector(FHIRAdapter.TCH);
+     
+     // config.setConnector(FHIRAdapter.MDS);
+          
         //config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
@@ -339,6 +341,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
             config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+      //  config.setEndPoint("http://testws.swpartners.com/mdsservice/mds");
         
         
         
@@ -426,7 +429,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         
         System.out.println("These are the logs of... " + run.getLogs());
 
-        System.out.println("issues length = " + run.getIssues().size());
+//        System.out.println("issues length = " + run.getIssues().size());
         
     }
 
