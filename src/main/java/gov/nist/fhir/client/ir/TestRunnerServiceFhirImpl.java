@@ -346,11 +346,11 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         TestCasePayLoad tc = new TestCasePayLoad();
         //    config.setConnector(FHIRAdapter.MA);      
         //  config.setConnector(FHIRAdapter.SWP);      
-        // config.setConnector(FHIRAdapter.TCH);
+         config.setConnector(FHIRAdapter.TCH);
      
       //config.setConnector(FHIRAdapter.MDS);
           
-        config.setConnector(FHIRAdapter.HL7);
+       // config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
         //  config.setConnector(FHIRAdapter.FHIR);
@@ -360,8 +360,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
         //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
-      //      config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-            config.setEndPoint("http://immlab.pagekite.me/aart/soap");
+            config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+        //    config.setEndPoint("http://immlab.pagekite.me/aart/soap");
             
             
             
@@ -378,8 +378,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 //config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
 //config.setEndPoint("http://immlab.pagekite.me/opencds-decision-support-service/evaluate?wsdl");
         config.setUserId("TEMP_CONN");
-        config.setFacilityId("54A");
-        config.setPassword("R5GMENKQBETF674CJWT");
+        config.setFacilityId("74A");
+        config.setPassword("V1QTBXSS58FKQP8PJ2A");
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
         //patient.setDob(dob);

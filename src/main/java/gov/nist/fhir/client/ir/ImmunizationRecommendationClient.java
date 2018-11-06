@@ -300,9 +300,8 @@ public class ImmunizationRecommendationClient {
                     System.out.println("INSIDE!");
                     
                     
+                    immunizationFhir.getManufacturerTarget().getIdentifierFirstRep().setValue(immunization.getManufactorer());
                     mvxOrg.getIdentifierFirstRep().setValue(immunization.getManufactorer());
-                    
-                    
                     
                     /*
                     org.hl7.fhir.dstu3.model.Organization mvxOrg = new org.hl7.fhir.dstu3.model.Organization();
