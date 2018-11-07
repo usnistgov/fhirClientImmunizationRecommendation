@@ -125,6 +125,7 @@ public class TranslationUtils {
         while (it.hasNext()) {
             ImmunizationVaccinationProtocolComponent ivp = it.next();            
             ActualEvaluation ae = new ActualEvaluation();
+            boolean safeToSend = true;
             String status = "";
             if (ivp.getDoseStatus() != null && ivp.getDoseStatus().getCoding() != null
                     && ivp.getDoseStatus().getCoding().get(0) != null
@@ -144,8 +145,13 @@ public class TranslationUtils {
                 ae.setStatus(EvaluationStatus.SUBSTANDARD);
             } else if ("Y".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.VALID);
-            } else {
+             } else if ("Invalid".equalsIgnoreCase(status)) {
                 ae.setStatus(EvaluationStatus.INVALID);
+            } else {
+                // ae.setStatus(EvaluationStatus.INVALID);
+                //Remove default 11/7/2018
+                // Also 11/7/2018, if no EvaluationStatus, DO NOT SEND
+                safeToSend = false;
             }
             VaccineRef vr = new VaccineRef();
             
@@ -159,7 +165,9 @@ public class TranslationUtils {
             }
             
             ae.setVaccine(vr);            
-            rve.getEvaluations().add(ae);
+            if(safeToSend) {
+                rve.getEvaluations().add(ae);
+            }
         }
         return rve;
     }
