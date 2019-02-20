@@ -221,11 +221,11 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
             StringType srs = (StringType) parameterSrs.getValue();
             //System.out.println("This is the TCH log = " + log.getValue());
-            if (srs != null) {
-                response.setSoftwareResultStatus(srs.getValue());
-            } else {
-                System.out.println("LOG: Software Status Result does not exist.");
-            }
+//            if (srs != null) {
+//                response.setSoftwareResultStatus(srs.getValue());
+//            } else {
+//                System.out.println("LOG: Software Status Result does not exist.");
+//            }
         } catch (IndexOutOfBoundsException e) {
 
             System.out.println("LOG:  Software Status Result does not exist.");
@@ -476,7 +476,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         System.out.println("These are the logs of... " + run.getLogs());
 
         System.out.println("issues length = " + run.getIssues().size());
-        System.out.println("Status = " + run.getSoftwareResultStatus());
+//        System.out.println("Status = " + run.getSoftwareResultStatus());
 
     }
 

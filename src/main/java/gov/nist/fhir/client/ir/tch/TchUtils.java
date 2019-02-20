@@ -100,15 +100,15 @@ public class TchUtils {
               */    
             switch(issueOrig.getIssueType()) {
                 
-                case AUTHENTICATION_FAILURE:
-                    issueNew.setCategory(IssueCategory.AUTHENTICATION);
-                    break;
-                case ENGINE_NOT_AVAILABLE:
-                    issueNew.setCategory(IssueCategory.AVAILABILITY);
-                    break;
-                case MATCH_NOT_FOUND:
-                    issueNew.setCategory(IssueCategory.MATCH_NOT_FOUND);
-                    break;
+//                case AUTHENTICATION_FAILURE:
+//                    issueNew.setCategory(IssueCategory.AUTHENTICATION);
+//                    break;
+//                case ENGINE_NOT_AVAILABLE:
+//                    issueNew.setCategory(IssueCategory.AVAILABILITY);
+//                    break;
+//                case MATCH_NOT_FOUND:
+//                    issueNew.setCategory(IssueCategory.MATCH_NOT_FOUND);
+//                    break;
                 case UNEXPECTED_FORMAT:
                     issueNew.setCategory(IssueCategory.FORMAT);
                     break;

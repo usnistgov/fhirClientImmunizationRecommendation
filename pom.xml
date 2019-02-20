@@ -46,17 +46,17 @@
         </dependency>
         -->
         <!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-base -->
-        <dependency>
+         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-base</artifactId>
             <version>3.4.0</version>
-        </dependency>
+        </dependency> 
         <!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-structures-dstu3 -->
-        <dependency>
+ <!--  		<dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
             <version>3.4.0</version>
-        </dependency>
+        </dependency>  -->
         <dependency>
             <groupId>gov.nist.fhir</groupId>
             <artifactId>fhirLib</artifactId>
@@ -79,11 +79,11 @@
             <version>3.12</version>
         </dependency>
         -->
-        <dependency>
+ 		<dependency>
             <groupId>org.tch.fc</groupId>
             <artifactId>ForecastConnector</artifactId>
-            <version>3.13</version>
-        </dependency>
+            <version>3.14</version>
+        </dependency> 
     </dependencies>
     
 </project>
