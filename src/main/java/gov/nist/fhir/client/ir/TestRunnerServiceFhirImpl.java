@@ -364,8 +364,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
-      //     TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-        TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+         TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
+      //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
         // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -375,9 +375,9 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //  config.setConnector(FHIRAdapter.SWP);      
          config.setConnector(FHIRAdapter.TCH);
 
-      //  config.setConnector(FHIRAdapter.SWP);
+       // config.setConnector(FHIRAdapter.SWP);
 
-        // config.setConnector(FHIRAdapter.HL7);
+      //   config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
         //  config.setConnector(FHIRAdapter.FHIR);
@@ -387,6 +387,9 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
              config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+             
+         //    config.setEndPoint("https://app.immregistries.org/aart/soap");
+             
         //   config.setEndPoint("http://immlab.pagekite.me/aart/soap");
         //config.setEndPoint("http://testws.swpartners.com/mdsservice/mds");
 
@@ -398,8 +401,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 //config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
 //config.setEndPoint("http://immlab.pagekite.me/opencds-decision-support-service/evaluate?wsdl");
         config.setUserId("TEMP_CONN");
-        config.setFacilityId("74A");
-        config.setPassword("V1QTBXSS58FKQP8PJ2A");
+        config.setFacilityId("50B");
+        config.setPassword("HMH373XKT5CA1D26PJ6");
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
         //patient.setDob(dob);
