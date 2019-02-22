@@ -128,6 +128,7 @@ public class TranslationUtils {
             boolean safeToSend = true;
             String status = "";
             if (ivp.getDoseStatus() != null && ivp.getDoseStatus().getCoding() != null
+            		&& ivp.getDoseStatus().getCoding().size() > 0
                     && ivp.getDoseStatus().getCoding().get(0) != null
                     && ivp.getDoseStatus().getCoding().get(0).getCode() != null) {
                 status = ivp.getDoseStatus().getCoding().get(0).getCode();
