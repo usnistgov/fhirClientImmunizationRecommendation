@@ -52,11 +52,11 @@
             <version>3.4.0</version>
         </dependency> 
         <!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-structures-dstu3 -->
- <!--  		<dependency>
+   		<dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
             <version>3.4.0</version>
-        </dependency>  -->
+        </dependency> 
         <dependency>
             <groupId>gov.nist.fhir</groupId>
             <artifactId>fhirLib</artifactId>
