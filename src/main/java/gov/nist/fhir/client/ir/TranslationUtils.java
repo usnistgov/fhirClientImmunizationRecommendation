@@ -15,6 +15,7 @@ import gov.nist.healthcare.cds.enumeration.SerieStatus;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -321,9 +322,11 @@ public class TranslationUtils {
     public static ActualForecast translateImmunizationRecommendationRecommendationToActualForecast(
             org.hl7.fhir.dstu3.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irr) {
         
+        /* Removing March 19th, 2019. Even if there is no date, try to create the Actual Forecast anyway
         if (irr.getDate() == null || "".equals(irr.getDate())) {
             return null;
         }
+        */
         
         ActualForecast af = new ActualForecast();
         //TODO: Error checking
@@ -339,7 +342,11 @@ public class TranslationUtils {
         }
         af.setVaccine(vaccineRef);
         
-        List<ImmunizationRecommendationRecommendationDateCriterionComponent> dateCriterions = irr.getDateCriterion();
+        List<ImmunizationRecommendationRecommendationDateCriterionComponent> dateCriterions = null; 
+        if (irr.getDateCriterion() != null)
+            dateCriterions = irr.getDateCriterion();
+        else
+            dateCriterions = new ArrayList();
         
         Iterator<ImmunizationRecommendationRecommendationDateCriterionComponent> it = dateCriterions.iterator();
         while (it.hasNext()) {
