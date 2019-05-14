@@ -14,12 +14,12 @@ import gov.nist.healthcare.cds.enumeration.IssueLevel;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.tch.fc.model.ForecastEngineIssue;
-import org.tch.fc.model.ForecastEngineIssueLevel;
-import org.tch.fc.model.ForecastEngineIssueType;
-import org.tch.fc.model.Service;
-import org.tch.fc.model.Software;
-import org.tch.fc.model.TestCase;
+import org.immregistries.vfa.connect.model.ForecastEngineIssue;
+import org.immregistries.vfa.connect.model.ForecastEngineIssueLevel;
+import org.immregistries.vfa.connect.model.ForecastEngineIssueType;
+import org.immregistries.vfa.connect.model.Service;
+import org.immregistries.vfa.connect.model.Software;
+import org.immregistries.vfa.connect.model.TestCase;
 
 /**
  *
