@@ -5,7 +5,7 @@
  */
 package gov.nist.fhir.client.ir;
 
-import org.tch.fc.model.TestEvent;
+import org.immregistries.vfa.connect.model.TestEvent;
 
 /**
  *

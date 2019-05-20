@@ -231,8 +231,6 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             System.out.println("LOG:  Software Status Result does not exist.");
         }
 
-        
-        
         try {
             //TODO: Do better than going by order of paramters
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent parameterIssue = parameters.getParameter().get(3);
@@ -364,9 +362,9 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
-          //       TestRunnerService test = new TestRunnerServiceFhirImpl("http://129.6.18.21:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-         TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-        // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+        //       TestRunnerService test = new TestRunnerServiceFhirImpl("http://129.6.18.21:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
+          TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
+    //    TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
         // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -374,11 +372,10 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         TestCasePayLoad tc = new TestCasePayLoad();
         //    config.setConnector(FHIRAdapter.MA);      
         //  config.setConnector(FHIRAdapter.SWP);      
-         config.setConnector(FHIRAdapter.TCH);
+        config.setConnector(FHIRAdapter.TCH);
 
-       // config.setConnector(FHIRAdapter.SWP);
-
-      //   config.setConnector(FHIRAdapter.HL7);
+        // config.setConnector(FHIRAdapter.SWP);
+     //   config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
         //  config.setConnector(FHIRAdapter.FHIR);
@@ -387,13 +384,12 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //config.setUser("stc");
         //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
-             config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-             
-         //    config.setEndPoint("https://app.immregistries.org/aart/soap");
-             
+                config.setEndPoint("http://tchforecasttester.org/fv/forecast");
+        //config.setEndPoint("http://florence.immregistries.org/aart/soap");
+
+        //    config.setEndPoint("https://app.immregistries.org/aart/soap");
         //   config.setEndPoint("http://immlab.pagekite.me/aart/soap");
         //config.setEndPoint("http://testws.swpartners.com/mdsservice/mds");
-
         //  config.setEndPoint("http://imm.pagekite.me/aart/soap");
         //    config.setEndPoint("http://imm.pagekite.me/iis-kernel/soap");
         //      config.setEndPoint("https://cds.hln.com/opencds-decision-support-service/evaluate?wsdl");
@@ -402,8 +398,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 //config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
 //config.setEndPoint("http://immlab.pagekite.me/opencds-decision-support-service/evaluate?wsdl");
         config.setUserId("TEMP_CONN");
-        config.setFacilityId("50B");
-        config.setPassword("HMH373XKT5CA1D26PJ6");
+        config.setFacilityId("23A");
+        config.setPassword("MPZ6G63D8RG7YY8EVRN");
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
         //patient.setDob(dob);
@@ -412,11 +408,11 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         tc.setGender(Gender.F);
 
         Calendar evalCal = Calendar.getInstance();
-        evalCal.set(2013, 5, 13);
+        evalCal.set(2019, 5, 13);
         Date evalDate = evalCal.getTime();
 
         Calendar dobCal = Calendar.getInstance();
-        dobCal.set(2012, 9, 2);
+        dobCal.set(2007, 9, 2);
         Date dobDate = dobCal.getTime();
 
         tc.setEvaluationDate(evalDate);
@@ -424,13 +420,34 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 
         //List<VaccinationEventPayLoad> vaccinationEvents = new ArrayList<VaccinationEventPayLoad>();
         Calendar immCal1 = Calendar.getInstance();
-        immCal1.set(2012, 10, 5);
+        immCal1.set(2007, 11, 2);
         Date immDate1 = immCal1.getTime();
 
         Calendar immCal2 = Calendar.getInstance();
+        immCal2.set(2008, 1, 2);
+        Date immDate2 = immCal2.getTime();
+
+        Calendar immCal3 = Calendar.getInstance();
+        immCal3.set(2008, 3, 2);
+        Date immDate3 = immCal3.getTime();
+
+        Calendar immCal4 = Calendar.getInstance();
+        immCal4.set(2008, 12, 2);
+        Date immDate4 = immCal4.getTime();
+
+        Calendar immCal5 = Calendar.getInstance();
+        immCal5.set(2013, 2, 5);
+        Date immDate5 = immCal5.getTime();
+
+        Calendar immCal6 = Calendar.getInstance();
+        immCal6.set(2019, 5, 13);
+        Date immDate6 = immCal1.getTime();
+
+        /*
+        Calendar immCal2 = Calendar.getInstance();
         immCal2.set(2009, 12, 9);
         Date immDate2 = immCal2.getTime();
-        /*
+        
         Calendar immCal3 = Calendar.getInstance();
         immCal3.set(2010, 4, 9);
         Date immDate3 = immCal3.getTime();
@@ -440,13 +457,27 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         Date immDate4 = immCal4.getTime();
          */
         VaccineRef vr1 = new VaccineRef();
-        vr1.setCvx("49");
+        vr1.setCvx("107");
         tc.addImmunization(vr1, immDate1);
 
         VaccineRef vr2 = new VaccineRef();
-        vr2.setCvx("110");
-        vr2.setMvx("AB");
+        vr2.setCvx("107");
         tc.addImmunization(vr2, immDate2);
+        VaccineRef vr3 = new VaccineRef();
+        vr3.setCvx("107");
+        tc.addImmunization(vr3, immDate3);
+        VaccineRef vr4 = new VaccineRef();
+        vr4.setCvx("107");
+        tc.addImmunization(vr4, immDate4);
+        VaccineRef vr5 = new VaccineRef();
+        vr5.setCvx("107");
+        tc.addImmunization(vr5, immDate5);
+
+        VaccineRef vr6 = new VaccineRef();
+        vr6.setCvx("09");
+
+        tc.addImmunization(vr6, immDate6);
+
         /*
         VaccineRef vr3 = new VaccineRef();
         vr3.setCvx("110");
@@ -459,7 +490,6 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         // http://tchforecasttester.org/fv/forecast?evalDate=20170101&evalSchedule=&resultFormat=text&patientDob=20160101&patientSex=F&vaccineDate1=20170101&vaccineCvx1=110
         //tc.setEvents(events);
         //tc.setImmunizations(events);
-
         EngineResponse run = null;
         try {
             run = test.run(config, tc);
