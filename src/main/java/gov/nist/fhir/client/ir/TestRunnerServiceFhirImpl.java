@@ -78,6 +78,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         sendingConfig.setAssessmentDate(TranslationUtils.translateJavaDateToFhirDate(assessmentDate));
         sendingConfig.setBirthdate(TranslationUtils.translateJavaDateToFhirDate(dob));
         sendingConfig.setGender(tc.getGender().getDetails());
+        sendingConfig.setTestCaseNumber(tc.getTestCaseNumber());
 
         //Set<Event> events = tc.getEvents();
         List<VaccinationEventPayLoad> events = tc.getImmunizations();
@@ -245,8 +246,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 response.setIssues(new ArrayList<>());
             }
 
-        } catch (IndexOutOfBoundsException e) {
-
+        } catch (IndexOutOfBoundsException e) {            
             System.out.println("LOG: No issues.");
         }
         /*
@@ -364,7 +364,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         //       TestRunnerService test = new TestRunnerServiceFhirImpl("http://129.6.18.21:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
           TestRunnerService test = new TestRunnerServiceFhirImpl("https://hit-dev.nist.gov:15000/fhirAdapter/fhir/Parameters/$cds-forecast");
-    //    TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
+     //  TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:9080/fhirAdapter/fhir/Parameters/$cds-forecast");
 
         // TestRunnerService test = new TestRunnerServiceFhirImpl("http://localhost:8084/fhirAdapter/fhir/Parameters/$cds-forecast");
 //TestRunnerService test = new TestRunnerServiceFhirImpl();
@@ -375,7 +375,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         config.setConnector(FHIRAdapter.TCH);
 
         // config.setConnector(FHIRAdapter.SWP);
-     //   config.setConnector(FHIRAdapter.HL7);
+       // config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
         //  config.setConnector(FHIRAdapter.FHIR);
@@ -385,7 +385,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
                 config.setEndPoint("http://tchforecasttester.org/fv/forecast");
-        //config.setEndPoint("http://florence.immregistries.org/aart/soap");
+      //  config.setEndPoint("http://florence.immregistries.org/aart/soap");
 
         //    config.setEndPoint("https://app.immregistries.org/aart/soap");
         //   config.setEndPoint("http://immlab.pagekite.me/aart/soap");
@@ -398,15 +398,15 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
 //config.setEndPoint("http://69.64.70.10:8080/vfmservice/VFMWebService");
 //config.setEndPoint("http://immlab.pagekite.me/opencds-decision-support-service/evaluate?wsdl");
         config.setUserId("TEMP_CONN");
-        config.setFacilityId("23A");
-        config.setPassword("MPZ6G63D8RG7YY8EVRN");
+        config.setFacilityId("62A");
+        config.setPassword("F8BPNT1PTUD5VCXXD6T");
         //Patient patient = new Patient();
         //Date dob = new FixedDate("01/01/2016");
         //patient.setDob(dob);
         //patient.setGender(Gender.F);
         //tc.setPatient(patient);        
         tc.setGender(Gender.F);
-
+        tc.setTestCaseNumber("123");
         Calendar evalCal = Calendar.getInstance();
         evalCal.set(2019, 5, 13);
         Date evalDate = evalCal.getTime();

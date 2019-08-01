@@ -166,8 +166,6 @@ public class ImmunizationRecommendationClient {
             serviceUrlParameterFhir.setValue(serviceUrlString);
             parametersFhir.addParameter(serviceUrlParameterFhir);
 
-            
-            
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent userIdParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
             userIdParameterFhir.setName(Consts.PARAMETER_NAME_USER_ID);
             org.hl7.fhir.dstu3.model.StringType userIdString = new org.hl7.fhir.dstu3.model.StringType();
@@ -190,6 +188,14 @@ public class ImmunizationRecommendationClient {
             passwordParameterFhir.setValue(passwordString);
             parametersFhir.addParameter(passwordParameterFhir);
      
+            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent testCaseNumberParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
+            testCaseNumberParameterFhir.setName(Consts.PARAMETER_NAME_TEST_CASE_NUMBER);
+            org.hl7.fhir.dstu3.model.StringType testCaseNumberString = new org.hl7.fhir.dstu3.model.StringType();
+            testCaseNumberString.setValue(sendingConfig.getTestCaseNumber());
+            testCaseNumberParameterFhir.setValue(testCaseNumberString);
+            parametersFhir.addParameter(testCaseNumberParameterFhir);
+            
+            
             /*
                     
             ParametersParameter serviceTypeParameter = FhirFactory.eINSTANCE.createParametersParameter();

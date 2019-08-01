@@ -13,6 +13,7 @@ import java.util.Collection;
  */
 public class SendingConfig {
     
+    private String testCaseNumber = null;
     private String gender = null;
     private String birthdate = null;
     private String assessmentDate = null;
@@ -72,6 +73,20 @@ public class SendingConfig {
      */
     public void setAssessmentDate(String assessmentDate) {
         this.assessmentDate = assessmentDate;
+    }
+
+    /**
+     * @return the testCaseNumber
+     */
+    public String getTestCaseNumber() {
+        return testCaseNumber;
+    }
+
+    /**
+     * @param testCaseNumber the testCaseNumber to set
+     */
+    public void setTestCaseNumber(String testCaseNumber) {
+        this.testCaseNumber = testCaseNumber;
     }
     
     
