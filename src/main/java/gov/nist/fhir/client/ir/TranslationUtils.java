@@ -174,6 +174,94 @@ public class TranslationUtils {
         return rve;
     }
 
+        public static ResponseVaccinationEvent translateImmunizationEvaluationToResponseVaccinationEventCurrentFhir(org.hl7.fhir.r4.model.ImmunizationEvaluation imm) {
+       
+        
+        ResponseVaccinationEvent rve = new ResponseVaccinationEvent();
+        /*
+        VaccineRef vaccineRef = new VaccineRef();
+        
+        if (imm.getVaccineCode() != null && imm.getVaccineCode().getCoding() != null
+                && imm.getVaccineCode().getCoding().get(0) != null
+                && imm.getVaccineCode().getCoding().get(0).getCode() != null) {
+            vaccineRef.setCvx(imm.getVaccineCode().getCoding().get(0).getCode());
+        }
+        rve.setAdministred(vaccineRef);
+        */
+        if(imm.getDate() != null)
+            rve.setDate(new FixedDate(imm.getDate()));
+        rve.setEvaluations(new HashSet<ActualEvaluation>());
+/*
+        List<org.hl7.fhir.r4.model.Immunization.ImmunizationProtocolAppliedComponent> vaccinationProtocols = imm.getProtocolApplied();
+        Iterator<org.hl7.fhir.r4.model.Immunization.ImmunizationProtocolAppliedComponent> it = vaccinationProtocols.iterator();
+        while (it.hasNext()) {
+            org.hl7.fhir.r4.model.Immunization.ImmunizationProtocolAppliedComponent ivp = it.next();            
+            ActualEvaluation ae = new ActualEvaluation();
+            boolean safeToSend = true;
+            String status = "";
+          
+            if (ivp.getDoseStatus() != null && ivp.getDoseStatus().getCoding() != null
+            		&& ivp.getDoseStatus().getCoding().size() > 0
+                    && ivp.getDoseStatus().getCoding().get(0) != null
+                    && ivp.getDoseStatus().getCoding().get(0).getCode() != null) {
+                status = ivp.getDoseStatus().getCoding().get(0).getCode();
+            }
+            
+            System.out.println("Status for " + ivp.getSeries() + " = " + status);
+        */
+
+            ActualEvaluation ae = new ActualEvaluation();
+            boolean safeToSend = true;
+            String status = "";
+            if(imm.getDoseStatus() != null && imm.getDoseStatus().getCoding() != null
+                    && imm.getDoseStatus().getCoding().size() > 0
+                    && imm.getDoseStatus().getCoding().get(0) != null
+                    && imm.getDoseStatus().getCoding().get(0).getCode() != null) {
+                status = imm.getDoseStatus().getCoding().get(0).getCode();
+
+            if ("Valid".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.VALID);
+            } else if ("Not Valid".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.INVALID);
+//                System.out.println("Setting " + ivp.getSeries() + " to EvaluationStatus.INVALID");
+            } else if ("Extraneous".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.EXTRANEOUS);
+            } else if ("Sub standard".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.SUBSTANDARD);
+            } else if ("Y".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.VALID);
+             } else if ("Invalid".equalsIgnoreCase(status)) {
+                ae.setStatus(EvaluationStatus.INVALID);
+            } else {
+                // ae.setStatus(EvaluationStatus.INVALID);
+                //Remove default 11/7/2018
+                // Also 11/7/2018, if no EvaluationStatus, DO NOT SEND
+                safeToSend = false;
+            }
+            VaccineRef vr = new VaccineRef();
+            
+            /*
+            if (ivp.getSeries() != null) {
+                vr.setCvx(ivp.getSeries());
+            }*/
+            if(imm.getTargetDisease() != null 
+                    && imm.getTargetDisease().getCoding() != null
+                    && imm.getTargetDisease().getCoding().get(0) != null
+                    && imm.getTargetDisease().getCoding().get(0).getCode() != null ) {
+                
+                
+                vr.setCvx(imm.getTargetDisease().getCoding().get(0).getCode());
+            }
+            
+            ae.setVaccine(vr);            
+            if(safeToSend) {
+                rve.getEvaluations().add(ae);
+            }
+        }
+        return rve;
+    }
+
+    
     /*
     
     public static ResponseVaccinationEvent translateImmunizationRecommendationRecommendationToResponseVaccinationEvent(
@@ -436,6 +524,128 @@ public class TranslationUtils {
         return af;
         
     }
+    
+        public static ActualForecast translateImmunizationRecommendationRecommendationToActualForecastCurrentFhir(
+            org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irr) {
+        
+        /* Removing March 19th, 2019. Even if there is no date, try to create the Actual Forecast anyway
+        if (irr.getDate() == null || "".equals(irr.getDate())) {
+            return null;
+        }
+        */
+        
+        ActualForecast af = new ActualForecast();
+        //TODO: Error checking
+        af.setDoseNumber(irr.getDoseNumberStringType().toString());
+        //af.setDoseNumber(Integer.toString(irr.getDoseNumber()));
+        VaccineRef vaccineRef = new VaccineRef();
+        if (irr.getVaccineCode() != null && irr.getVaccineCode().listIterator() != null
+                && irr.getVaccineCode().size() > 0
+                && irr.getVaccineCode().get(0) != null
+                && irr.getVaccineCode().get(0).getText() != null) {
+            org.hl7.fhir.r4.model.CodeableConcept ct = irr.getVaccineCode().get(0);
+            vaccineRef.setCvx(irr.getVaccineCode().get(0).getText());
+            
+        }
+        af.setVaccine(vaccineRef);
+        
+        List<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationDateCriterionComponent> dateCriterions = null; 
+        if (irr.getDateCriterion() != null)
+            dateCriterions = irr.getDateCriterion();
+        else
+            dateCriterions = new ArrayList();
+        
+        Iterator<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationDateCriterionComponent> it = dateCriterions.iterator();
+        while (it.hasNext()) {
+            
+            org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationDateCriterionComponent dateCriterion = it.next();
+            
+            if (dateCriterion.getValue() != null && dateCriterion.getValue() != null) {
+                FixedDate date = new FixedDate(dateCriterion.getValue());
+
+                // TODO: Error checking
+                String status = "";
+                if (dateCriterion.getCode() != null && dateCriterion.getCode().getCoding() != null
+                        && dateCriterion.getCode().getCoding().get(0) != null
+                        && dateCriterion.getCode().getCoding().get(0).getCode() != null) {
+                    status = dateCriterion.getCode().getCoding().get(0).getCode();
+                }
+                switch (status) {
+                    //case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_DUE:
+//                        af.setRecommended(date.getDate());
+  //                      break;
+                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_EARLIEST:
+                        af.setEarliest(date.asDate());
+                        break;
+                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_OVERDUE:
+                        af.setPastDue(date.asDate());
+                        break;
+                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_LATEST:
+                        af.setComplete(date.asDate());
+                        break;
+                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED:
+                        af.setRecommended(date.asDate());
+                        break;                    
+                }
+            }
+        }
+        if (irr.getForecastStatus() != null && irr.getForecastStatus().getCoding() != null
+                && irr.getForecastStatus().getCoding().size() > 0
+                && irr.getForecastStatus().getCoding().get(0) != null
+                && irr.getForecastStatus().getCoding().get(0).getCode() != null) {
+            String status = irr.getForecastStatus().getCoding().get(0).getCode();
+
+            
+            try {
+                if (status.equalsIgnoreCase("assumed complete or immune")){
+                    af.setSerieStatus(SerieStatus.A);
+                } else if (status.equalsIgnoreCase("complete")) {
+                    af.setSerieStatus(SerieStatus.C);
+                } else if (status.equalsIgnoreCase("due")) {
+                    af.setSerieStatus(SerieStatus.D);
+                    //TODO : Find out what happened to E and R?
+                    
+//                } else if(status.equalsIgnoreCase("error")) {
+//                    af.setSerieStatus(SerieStatus.E);
+                } else if(status.equalsIgnoreCase("finished")) {
+                    af.setSerieStatus(SerieStatus.F);
+                } else if(status.equalsIgnoreCase("aged out")) {
+                    af.setSerieStatus(SerieStatus.G);                    
+                } else if(status.equalsIgnoreCase("immune")) {
+                    af.setSerieStatus(SerieStatus.I);
+                } else if(status.equalsIgnoreCase("due later")) {
+                    af.setSerieStatus(SerieStatus.L);
+                } else if(status.equalsIgnoreCase("not complete")) {
+                    af.setSerieStatus(SerieStatus.N);                    
+                } else if(status.equalsIgnoreCase("overdue")) {
+                    af.setSerieStatus(SerieStatus.O);                    
+//                } else if(status.equalsIgnoreCase("no results")) {
+//                    af.setSerieStatus(SerieStatus.R);
+                } else if(status.equalsIgnoreCase("complete for season")) {
+                    af.setSerieStatus(SerieStatus.S);
+                } else if(status.equalsIgnoreCase("unknown")) {
+                    af.setSerieStatus(SerieStatus.U);
+                } else if(status.equalsIgnoreCase("Consider")) {
+                    af.setSerieStatus(SerieStatus.V);
+                } else if(status.equalsIgnoreCase("waivered")) {
+                    af.setSerieStatus(SerieStatus.W);
+                } else if(status.equalsIgnoreCase("contraindicated")) {
+                    af.setSerieStatus(SerieStatus.X);
+                } else if(status.equalsIgnoreCase("recommended but not required")) {
+                    af.setSerieStatus(SerieStatus.Z);
+                }
+
+            } catch (Exception e) {
+                //TODO better error checking
+                System.out.println("Unexpected dose status = " + status);
+            }
+        }
+        return af;
+        
+    }
+
+    
+    
     /*
     public static boolean doesRecommendationHaveDateCriterion(ImmunizationRecommendationRecommendation irr) {
 

@@ -66,8 +66,9 @@ public class ImmunizationRecommendationClient {
         String patientId = UUID.randomUUID().toString();
         //patientId.setValue(UUID.randomUUID().toString());
 
-        FhirContext ctx = FhirContext.forDstu3();
         org.hl7.fhir.dstu3.model.Parameters parametersFhir = new org.hl7.fhir.dstu3.model.Parameters();
+        org.hl7.fhir.r4.model.Parameters parametersFhirR4 = new org.hl7.fhir.r4.model.Parameters();
+
         /*
         if (useAdapter) {
             ParametersParameter genderParameter = FhirFactory.eINSTANCE.createParametersParameter();
@@ -98,38 +99,74 @@ public class ImmunizationRecommendationClient {
             patientParameter.setResource(patientRC);
             parameters.getParameter().add(patientParameter);
          */
-        org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent patientParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
-        patientParametersParameterFhir.setName(Consts.PARAMETER_NAME_PATIENT);
-        org.hl7.fhir.dstu3.model.Patient patientFhir = new org.hl7.fhir.dstu3.model.Patient();
-        patientFhir.setId(patientId);
-        char gender = sendingConfig.getGender().toLowerCase().charAt(0);
-        switch (gender) {
-            case 'm':
-                patientFhir.setGender(Enumerations.AdministrativeGender.MALE);
-                break;
-            case 'f':
-                patientFhir.setGender(Enumerations.AdministrativeGender.FEMALE);
-                break;
-            case 'o':
-                patientFhir.setGender(Enumerations.AdministrativeGender.OTHER);
-                break;
-            case 'u':
-                patientFhir.setGender(Enumerations.AdministrativeGender.UNKNOWN);
-                break;
-            default:
-                patientFhir.setGender(Enumerations.AdministrativeGender.NULL);
-                break;
+        if (useAdapter) {
+            org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent patientParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
+            patientParametersParameterFhir.setName(Consts.PARAMETER_NAME_PATIENT);
+            org.hl7.fhir.dstu3.model.Patient patientFhir = new org.hl7.fhir.dstu3.model.Patient();
+            patientFhir.setId(patientId);
+            char gender = sendingConfig.getGender().toLowerCase().charAt(0);
+            switch (gender) {
+                case 'm':
+                    patientFhir.setGender(Enumerations.AdministrativeGender.MALE);
+                    break;
+                case 'f':
+                    patientFhir.setGender(Enumerations.AdministrativeGender.FEMALE);
+                    break;
+                case 'o':
+                    patientFhir.setGender(Enumerations.AdministrativeGender.OTHER);
+                    break;
+                case 'u':
+                    patientFhir.setGender(Enumerations.AdministrativeGender.UNKNOWN);
+                    break;
+                default:
+                    patientFhir.setGender(Enumerations.AdministrativeGender.NULL);
+                    break;
+            }
+            try {
+                java.util.Date dob = TranslationUtils.translateHl7DateToJavaDate(sendingConfig.getBirthdate());
+                patientFhir.setBirthDate(dob);
+            } catch (ParseException ex) {
+                Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+                //TODO: Better error reporting
+            }
+            patientParametersParameterFhir.setResource(patientFhir);
+            parametersFhir.addParameter(patientParametersParameterFhir);
+        } else {
+            org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent patientParametersParameterFhir = new org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent();
+            patientParametersParameterFhir.setName(Consts.PARAMETER_NAME_PATIENT);
+            org.hl7.fhir.r4.model.Patient patientFhir = new org.hl7.fhir.r4.model.Patient();
+            patientFhir.setId(patientId);
+            char gender = sendingConfig.getGender().toLowerCase().charAt(0);
+            switch (gender) {
+                case 'm':
+                    patientFhir.setGender(org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.MALE);
+                    break;
+                case 'f':
+                    patientFhir.setGender(org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.FEMALE);
+                    break;
+                case 'o':
+                    patientFhir.setGender(org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.OTHER);
+                    break;
+                case 'u':
+                    patientFhir.setGender(org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.UNKNOWN);
+                    break;
+                default:
+                    patientFhir.setGender(org.hl7.fhir.r4.model.Enumerations.AdministrativeGender.NULL);
+                    break;
+            }
+            try {
+                java.util.Date dob = TranslationUtils.translateHl7DateToJavaDate(sendingConfig.getBirthdate());
+                patientFhir.setBirthDate(dob);
+            } catch (ParseException ex) {
+                Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
+                //TODO: Better error reporting
+            }
+            patientParametersParameterFhir.setResource(patientFhir);
+            parametersFhirR4.addParameter(patientParametersParameterFhir);
+
         }
-        try {
-            java.util.Date dob = TranslationUtils.translateHl7DateToJavaDate(sendingConfig.getBirthdate());
-            patientFhir.setBirthDate(dob);
-        } catch (ParseException ex) {
-            Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
-            ex.printStackTrace();
-            //TODO: Better error reporting
-        }
-        patientParametersParameterFhir.setResource(patientFhir);
-        parametersFhir.addParameter(patientParametersParameterFhir);
         /*
         Set<String> mvx = ImmunizationRecommendationClient.getUniqueMvx(sendingConfig);
         if(mvx != null && !mvx.isEmpty()) {
@@ -147,7 +184,7 @@ public class ImmunizationRecommendationClient {
                 parametersFhir.addParameter(mvxParametersParameterFhir);
             }
         }
-        */
+         */
         //  }
 
         if (useAdapter) {
@@ -172,30 +209,28 @@ public class ImmunizationRecommendationClient {
             userIdString.setValue(routing.getUserId());
             userIdParameterFhir.setValue(userIdString);
             parametersFhir.addParameter(userIdParameterFhir);
-            
-            
+
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent facilityIdParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
             facilityIdParameterFhir.setName(Consts.PARAMETER_NAME_FACILITY_ID);
             org.hl7.fhir.dstu3.model.StringType facilityIdString = new org.hl7.fhir.dstu3.model.StringType();
             facilityIdString.setValue(routing.getFacilityId());
             facilityIdParameterFhir.setValue(facilityIdString);
             parametersFhir.addParameter(facilityIdParameterFhir);
-            
+
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent passwordParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
             passwordParameterFhir.setName(Consts.PARAMETER_NAME_PASSWORD);
             org.hl7.fhir.dstu3.model.StringType passwordString = new org.hl7.fhir.dstu3.model.StringType();
             passwordString.setValue(routing.getPassword());
             passwordParameterFhir.setValue(passwordString);
             parametersFhir.addParameter(passwordParameterFhir);
-     
+
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent testCaseNumberParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
             testCaseNumberParameterFhir.setName(Consts.PARAMETER_NAME_TEST_CASE_NUMBER);
             org.hl7.fhir.dstu3.model.StringType testCaseNumberString = new org.hl7.fhir.dstu3.model.StringType();
             testCaseNumberString.setValue(sendingConfig.getTestCaseNumber());
             testCaseNumberParameterFhir.setValue(testCaseNumberString);
             parametersFhir.addParameter(testCaseNumberParameterFhir);
-            
-            
+
             /*
                     
             ParametersParameter serviceTypeParameter = FhirFactory.eINSTANCE.createParametersParameter();
@@ -245,161 +280,111 @@ public class ImmunizationRecommendationClient {
         }
         parametersFhir.addParameter(assessmentDateParametersParameterFhir);
 
-        //   }
-        /*
         if (useAdapter) {
-
+            //Adapter uses the old FHIR spec
             Collection<Immunization> immunizations = sendingConfig.getImmunizationData();
             if (immunizations != null) {
-                ParametersParameter immunizationsParameter = FhirFactory.eINSTANCE.createParametersParameter();
-                immunizationsParameter.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_IMMUNIZATION_ADAPTER));
-                Iterator<Immunization> iterator = immunizations.iterator();
-                int i = 0;
-                while (iterator.hasNext()) {
-                    Immunization immunization = iterator.next();
+                Iterator<Immunization> it = immunizations.iterator();
+                while (it.hasNext()) {
+                    Immunization immunization = it.next();
+                    org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
+                    immunizationParametersParameterFhir.setName(Consts.PARAMETER_NAME_IMMUNIZATION);
+                    org.hl7.fhir.dstu3.model.Immunization immunizationFhir = new org.hl7.fhir.dstu3.model.Immunization();
 
-                    org.hl7.fhir.Immunization fhirImmunization = FhirFactory.eINSTANCE.createImmunization();
-                    Id immunizationId = FhirFactory.eINSTANCE.createId();
-                    immunizationId.setValue(UUID.randomUUID().toString());
-                    fhirImmunization.setId(immunizationId);
-                    DateTime immunizationDate = FhirFactory.eINSTANCE.createDateTime();
-                    immunizationDate.setValue(FHIRUtil.convert2XMLCalendar(immunization.getDate()));
-                    fhirImmunization.setDate(immunizationDate);
-                    //Narrative codeText = FhirFactory.eINSTANCE.createNarrative();
-                    //NarrativeStatus codeTextStatus = FhirFactory.eINSTANCE.createNarrativeStatus();                
-                    //codeTextStatus.setValue(NarrativeStatusList.EMPTY.);
-                    //codeText.setStatus();
-                    CodeableConcept immCC = FhirFactory.eINSTANCE.createCodeableConcept();
-                    immCC.setText(FHIRUtil.convert(immunization.getVaccineCode()));
-                    Coding immCoding = FhirFactory.eINSTANCE.createCoding();
-                    Code immCode = FhirFactory.eINSTANCE.createCode();
-                    immCode.setValue(immunization.getVaccineCode());
-                    immCoding.setCode(immCode);
-                    immCC.getCoding().add(immCoding);
-                    fhirImmunization.setVaccineCode(immCC);
-
-                    ParametersParameter currentParam = FhirFactory.eINSTANCE.createParametersParameter();
-                    ResourceContainer rc = FhirFactory.eINSTANCE.createResourceContainer();
-                    rc.setImmunization(fhirImmunization);
-
-                    currentParam.setResource(rc);
-                    immunizationsParameter.getPart().add(currentParam);
-                    i++;
-                }
-                parameters.getParameter().add(immunizationsParameter);
-            }
-        } else {
-         */
-        Collection<Immunization> immunizations = sendingConfig.getImmunizationData();
-        if (immunizations != null) {
-            Iterator<Immunization> it = immunizations.iterator();
-            while (it.hasNext()) {
-                Immunization immunization = it.next();
-                org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
-                immunizationParametersParameterFhir.setName(Consts.PARAMETER_NAME_IMMUNIZATION);
-                org.hl7.fhir.dstu3.model.Immunization immunizationFhir = new org.hl7.fhir.dstu3.model.Immunization();
-                System.out.println("OUTSIDE!");
-                // Adding MVX org
-               org.hl7.fhir.dstu3.model.Organization mvxOrg = new org.hl7.fhir.dstu3.model.Organization();
-
-                if(immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
-                    System.out.println("INSIDE!");
-                    
-                    
-                    immunizationFhir.getManufacturerTarget().getIdentifierFirstRep().setValue(immunization.getManufactorer());
-                    mvxOrg.getIdentifierFirstRep().setValue(immunization.getManufactorer());
-                    
-                    /*
+                    // Adding MVX org
                     org.hl7.fhir.dstu3.model.Organization mvxOrg = new org.hl7.fhir.dstu3.model.Organization();
-                    mvxOrg.setId(immunization.getManufactorer());
-                    org.hl7.fhir.dstu3.model.Identifier mvxIdentifier = new org.hl7.fhir.dstu3.model.Identifier();
-                    mvxIdentifier.setValue(immunization.getManufactorer());
-                    ArrayList<org.hl7.fhir.dstu3.model.Identifier> identifiers = new ArrayList<org.hl7.fhir.dstu3.model.Identifier>();
-                    identifiers.add(mvxIdentifier);
-                    mvxOrg.setIdentifier(identifiers);
-                    ArrayList<org.hl7.fhir.dstu3.model.Resource> organizations = new ArrayList<org.hl7.fhir.dstu3.model.Resource>();
-                    organizations.add(mvxOrg);
-                    immunizationFhir.setContained(organizations);
-                    
-                    
-                    System.out.println("Has contained??? " + immunizationFhir.hasContained());
-                    
-                    System.out.println("OUTPUTHERE!!!" + ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(immunizationFhir));
-                    */
-                    
-                }
-                
-                immunizationFhir.setId(UUID.randomUUID().toString());
-                try {
-                    immunizationFhir.setDate(TranslationUtils.translateHl7DateToJavaDate(immunization.getDate()));
-                } catch (ParseException ex) {
-                    Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
-                    // TODO: Better error reporting
-                }
-                org.hl7.fhir.dstu3.model.CodeableConcept vaccineFhir = new org.hl7.fhir.dstu3.model.CodeableConcept();
 
-                org.hl7.fhir.dstu3.model.Coding code = new org.hl7.fhir.dstu3.model.Coding();
-                code.setCode(immunization.getVaccineCode());
+                    if (immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
 
-                vaccineFhir.addCoding(code);
-                immunizationFhir.setVaccineCode(vaccineFhir);
-                immunizationFhir.setStatus(org.hl7.fhir.dstu3.model.Immunization.ImmunizationStatus.COMPLETED);
-                if(immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
-                    //org.hl7.fhir.dstu3.model.Reference manufacturerReference = new org.hl7.fhir.dstu3.model.Reference();
-                    //manufacturerReference.setReference(immunization.getManufactorer());
-                    //immunizationFhir.setManufacturer(manufacturerReference);
-                    immunizationFhir.getManufacturer().setResource(mvxOrg);
-                            
-                            
-                            //patient.getManagingOrganization().setResource(org);
+                        immunizationFhir.getManufacturerTarget().getIdentifierFirstRep().setValue(immunization.getManufactorer());
+                        mvxOrg.getIdentifierFirstRep().setValue(immunization.getManufactorer());
+
+                    }
+
+                    immunizationFhir.setId(UUID.randomUUID().toString());
+                    try {
+                        immunizationFhir.setDate(TranslationUtils.translateHl7DateToJavaDate(immunization.getDate()));
+                    } catch (ParseException ex) {
+                        Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+                        // TODO: Better error reporting
+                    }
+                    org.hl7.fhir.dstu3.model.CodeableConcept vaccineFhir = new org.hl7.fhir.dstu3.model.CodeableConcept();
+
+                    org.hl7.fhir.dstu3.model.Coding code = new org.hl7.fhir.dstu3.model.Coding();
+                    code.setCode(immunization.getVaccineCode());
+
+                    vaccineFhir.addCoding(code);
+                    immunizationFhir.setVaccineCode(vaccineFhir);
+                    immunizationFhir.setStatus(org.hl7.fhir.dstu3.model.Immunization.ImmunizationStatus.COMPLETED);
+                    if (immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
+                        immunizationFhir.getManufacturer().setResource(mvxOrg);
+                    }
+
+                    org.hl7.fhir.dstu3.model.Reference patientReference = new org.hl7.fhir.dstu3.model.Reference();
+                    patientReference.setReference(patientId);
+                    immunizationFhir.setPatient(patientReference);
+                    immunizationFhir.setNotGiven(false);
+                    immunizationParametersParameterFhir.setResource(immunizationFhir);
+                    parametersFhir.addParameter(immunizationParametersParameterFhir);
+
                 }
-                
-                org.hl7.fhir.dstu3.model.Reference patientReference = new org.hl7.fhir.dstu3.model.Reference();
-                patientReference.setReference(patientId);
-                immunizationFhir.setPatient(patientReference);
-                immunizationFhir.setNotGiven(false);
-                immunizationParametersParameterFhir.setResource(immunizationFhir);
-                parametersFhir.addParameter(immunizationParametersParameterFhir);
-
-                //TODO: Reported???
-                //ParametersParameter immParam = FhirFactory.eINSTANCE.createParametersParameter();
-                //immParam.setName(FHIRUtil.convert(Consts.PARAMETER_NAME_IMMUNIZATION));
-                //ResourceContainer resource = FhirFactory.eINSTANCE.createResourceContainer();
-                //org.hl7.fhir.Immunization fhirImmunization = FhirFactory.eINSTANCE.createImmunization();
-                //Id immunizationId = FhirFactory.eINSTANCE.createId();
-                //immunizationId.setValue(UUID.randomUUID().toString());
-                //fhirImmunization.setId(immunizationId);
-                //DateTime immunizationDate = FhirFactory.eINSTANCE.createDateTime();
-                //immunizationDate.setValue(FHIRUtil.convert2XMLCalendar(immunization.getDate()));
-                //fhirImmunization.setDate(immunizationDate);
-                //Narrative codeText = FhirFactory.eINSTANCE.createNarrative();
-                //NarrativeStatus codeTextStatus = FhirFactory.eINSTANCE.createNarrativeStatus();                
-                //codeTextStatus.setValue(NarrativeStatusList.EMPTY.);
-                //codeText.setStatus();
-                //CodeableConcept immCC = FhirFactory.eINSTANCE.createCodeableConcept();
-                //immCC.setText(FHIRUtil.convert(immunization.getVaccineCode()));
-                //Coding immCoding = FhirFactory.eINSTANCE.createCoding();
-                //Code immCode = FhirFactory.eINSTANCE.createCode();
-                //immCode.setValue(immunization.getVaccineCode());
-                //immCoding.setCode(immCode);
-                //immCC.getCoding().add(immCoding);
-                //fhirImmunization.setVaccineCode(immCC);
-                //clean up
-                //Code status = FhirFactory.eINSTANCE.createCode();
-                // TODO put in final variable
-                //status.setValue("completed");
-                //fhirImmunization.setStatus(status);
-                //Reference patient = FhirFactory.eINSTANCE.createReference();
-                //patient.setReference(FHIRUtil.convert(patientId.getValue()));
-                //fhirImmunization.setPatient(patient);
-                // fhirImmunization.setWasNotGiven(FHIRUtil.BOOLEAN.FALSE.bool);
-//                    fhirImmunization.setReported(FHIRUtil.BOOLEAN.TRUE.bool);
-                //                  resource.setImmunization(fhirImmunization);
-                //                immParam.setResource(resource);
-                //              parameters.getParameter().add(immParam);
             }
-        }
 
+        } else {
+            //The current FHIR spec
+            Collection<Immunization> immunizations = sendingConfig.getImmunizationData();
+            if (immunizations != null) {
+                Iterator<Immunization> it = immunizations.iterator();
+                while (it.hasNext()) {
+
+                    Immunization immunization = it.next();
+                    //  org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
+                    org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent();
+                    immunizationParametersParameterFhir.setName(Consts.PARAMETER_NAME_IMMUNIZATION);
+                    // org.hl7.fhir.dstu3.model.Immunization immunizationFhir = new org.hl7.fhir.dstu3.model.Immunization();
+                    org.hl7.fhir.r4.model.Immunization immunizationFhir = new org.hl7.fhir.r4.model.Immunization();
+
+                    // Adding MVX org
+                    org.hl7.fhir.r4.model.Organization mvxOrg = new org.hl7.fhir.r4.model.Organization();
+
+                    if (immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
+
+                        immunizationFhir.getManufacturerTarget().getIdentifierFirstRep().setValue(immunization.getManufactorer());
+                        mvxOrg.getIdentifierFirstRep().setValue(immunization.getManufactorer());
+
+                    }
+
+                    immunizationFhir.setId(UUID.randomUUID().toString());
+                    try {
+                      
+                        immunizationFhir.setOccurrence(new org.hl7.fhir.r4.model.DateTimeType(TranslationUtils.translateHl7DateToJavaDate(immunization.getDate())));
+                    } catch (ParseException ex) {
+                        Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+                        // TODO: Better error reporting
+                    }
+                    org.hl7.fhir.r4.model.CodeableConcept vaccineFhir = new org.hl7.fhir.r4.model.CodeableConcept();
+
+                    org.hl7.fhir.r4.model.Coding code = new org.hl7.fhir.r4.model.Coding();
+                    code.setCode(immunization.getVaccineCode());
+
+                    vaccineFhir.addCoding(code);
+                    immunizationFhir.setVaccineCode(vaccineFhir);
+                    immunizationFhir.setStatus(org.hl7.fhir.r4.model.Immunization.ImmunizationStatus.COMPLETED);
+                    if (immunization.getManufactorer() != null && !immunization.getManufactorer().isEmpty()) {
+                        immunizationFhir.getManufacturer().setResource(mvxOrg);
+                    }
+
+                    org.hl7.fhir.r4.model.Reference patientReference = new org.hl7.fhir.r4.model.Reference();
+                    patientReference.setReference(patientId);
+                    immunizationFhir.setPatient(patientReference);
+                    //immunizationFhir.setNotGiven(false); TODO: Is there an equivilent in r4???
+                    immunizationParametersParameterFhir.setResource(immunizationFhir);
+                    parametersFhirR4.addParameter(immunizationParametersParameterFhir);
+
+                }
+            }
+
+        }
         //   }
         String payload = null;
 
@@ -407,12 +392,26 @@ public class ImmunizationRecommendationClient {
         //          Serialize seri = new Serialize();
         //        xml = seri.it(parameters, "sut.xml");
         //  } else {
-        if (format != null && format.equals(FormatEnum.JSON)) {
-            payload = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(parametersFhir);
+        FhirContext ctx = null;
+        if (useAdapter) {
+            ctx = FhirContext.forDstu3();
         } else {
-            payload = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parametersFhir);
+            ctx = FhirContext.forR4();
         }
 
+        if (useAdapter) {
+            if (format != null && format.equals(FormatEnum.JSON)) {
+                payload = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(parametersFhir);
+            } else {
+                payload = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parametersFhir);
+            }
+        } else {
+            if (format != null && format.equals(FormatEnum.JSON)) {
+                payload = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(parametersFhirR4);
+            } else {
+                payload = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parametersFhirR4);
+            }
+        }
 //        }
         //       System.out.println(seri.it(patientParameter, "sut.xml"));
         //System.out.println("GENERATED OBJECT HERE ----->\n" + xml);
@@ -484,6 +483,8 @@ public class ImmunizationRecommendationClient {
          */
         //return parameterXml.toString();
         //    System.out.println(xml);
+//        System.out.println("PAYLOAD = " + payload);
+
         return payload;
     }
 
@@ -595,20 +596,22 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
     }
 
     private static Set<String> getUniqueMvx(SendingConfig sendingConfig) {
-        
+
         Set<String> mvx = new HashSet<>();
-        Collection<Immunization> imms = sendingConfig.getImmunizationData();        
-        if (imms == null) return mvx;        
-        Iterator<Immunization> it = imms.iterator();
-        while(it.hasNext()) {            
-            Immunization imm = it.next();
-            if(imm.getManufactorer() != null && !imm.getManufactorer().isEmpty())
-                mvx.add(imm.getManufactorer());            
+        Collection<Immunization> imms = sendingConfig.getImmunizationData();
+        if (imms == null) {
+            return mvx;
         }
-        
+        Iterator<Immunization> it = imms.iterator();
+        while (it.hasNext()) {
+            Immunization imm = it.next();
+            if (imm.getManufactorer() != null && !imm.getManufactorer().isEmpty()) {
+                mvx.add(imm.getManufactorer());
+            }
+        }
+
         return mvx;
-        
-        
+
     }
 
     public Object getImmunizationRecommendation(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format) throws IOException, UnsupportedEncodingException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ConnectionException {
@@ -684,8 +687,13 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         //return recommendations;
 
         //    } else {
-        FhirContext ctx = FhirContext.forDstu3();
-        s1 = ctx.newXmlParser().parseResource(xml);
+        if (useAdapter) {
+            FhirContext ctx = FhirContext.forDstu3();
+            s1 = ctx.newXmlParser().parseResource(xml);
+        } else {
+            FhirContext ctx = FhirContext.forR4();
+            s1 = ctx.newXmlParser().parseResource(xml);
+        }
         //org.hl7.fhir.dstu3.model.Bundle bundle = new org.hl7.fhir.dstu3.model.Bundle();
         //bundle = (org.hl7.fhir.dstu3.model.Bundle) s2;
         //s1 = bundle;
@@ -702,6 +710,7 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         routing.setFhirAdapterUrl("http://localhost:8084/forecast/ImmunizationRecommendations");
         //routing.setFhirAdapterUrl("http://hit-dev.nist.gov:11080/fhirAdapter/fhir/Parameters/$cds-forecast");
         routing.setForecastType("TCH");
+        //    routing.setForecastType("FHIR");
         //  routing.setForecastUrl("http://tchforecasttester.org/fv/forecast");
         routing.setForecastUrl("https://test-cdsi.rhcloud.com/CDSi/cds-forecast");
 

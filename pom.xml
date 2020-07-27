@@ -10,6 +10,62 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
+    
+    <!-- Needed for https -->
+   
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Central Repository</name>
+            
+           <url>https://repo.maven.apache.org/maven2</url>
+           
+           <!--
+            <url>http://insecure.repo1.maven.org/maven2/</url>
+            -->
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+        <!--
+                <pluginRepository>
+            <id>central1</id>
+            <name>Central Repository</name>
+     
+            <url>https://repo1.maven.org/maven2/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+        
+        -->
+        
+    </pluginRepositories>
+ <repositories>
+             <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+           
+           <url>https://repo.maven.apache.org/maven2</url>
+           
+          <!--  <url>http://insecure.repo1.maven.org/maven2/</url> -->
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+ </repositories>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
@@ -49,14 +105,26 @@
          <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-base</artifactId>
-            <version>3.8.0</version>
+            <version>5.0.2</version>
+           <!-- <version>3.8.0</version>-->
         </dependency> 
         <!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-structures-dstu3 -->
    		<dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-structures-dstu3</artifactId>
-            <version>3.8.0</version>
+       
+            <version>5.0.2</version>
+           <!-- <version>3.8.0</version>-->
         </dependency> 
+        <!-- https://mvnrepository.com/artifact/ca.uhn.hapi.fhir/hapi-fhir-structures-r4 -->
+
+        <dependency>
+    <groupId>ca.uhn.hapi.fhir</groupId>
+    <artifactId>hapi-fhir-structures-r4</artifactId>
+    <version>5.0.2</version>
+</dependency>
+
+        
         <dependency>
             <groupId>gov.nist.fhir</groupId>
             <artifactId>fhirLib</artifactId>
