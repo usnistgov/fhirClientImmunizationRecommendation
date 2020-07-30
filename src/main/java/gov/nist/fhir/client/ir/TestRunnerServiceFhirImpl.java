@@ -256,8 +256,17 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             // Not using the adapter means to use the newest FHIR CDSi spec
 
             org.hl7.fhir.r4.model.Parameters parameters = null;
+            org.hl7.fhir.r4.model.Bundle bundle = null;
+            Object returned = null;
             try {
-                parameters = (org.hl7.fhir.r4.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
+                //  org.hl7.fhir.r4.model.Bundle bundle = (org.hl7.fhir.r4.model.Bundle) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
+                //    System.out.println("BUNDLE" + bundle.toString());
+
+                //               FhirContext ctx = FhirContext.forR4();
+                // String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+                //System.out.println("raw = " + raw);
+                returned = irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
+                parameters = (org.hl7.fhir.r4.model.Parameters) returned;
             } catch (IOException ex) {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
             } catch (KeyStoreException ex) {
@@ -266,8 +275,20 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
             } catch (KeyManagementException ex) {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassCastException ex) {
+                Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
+                bundle = (org.hl7.fhir.r4.model.Bundle) returned;
+// TODO: If there's a class cast exception find a better way of returning the HTTP body
             }
 
+            if (parameters == null) {
+                FhirContext ctx = FhirContext.forR4();
+                String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
+                response.setResponse(raw);
+                
+                return response;
+            }
+            
             FhirContext ctx = FhirContext.forR4();
             String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parameters);
             response.setResponse(raw);
@@ -285,7 +306,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 ir = (org.hl7.fhir.r4.model.ImmunizationRecommendation) parameter.getResource();
             }
             if (ir != null) {
-                
+
                 List<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> irrs = ir.getRecommendation();
                 Iterator<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> it = irrs.iterator();
                 while (it.hasNext()) {
@@ -495,10 +516,10 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //   config.setConnector(FHIRAdapter.LSVF);
 
         // config.setConnector(FHIRAdapter.SWP);
-    //    config.setConnector(FHIRAdapter.HL7);
+            config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
-          config.setConnector(FHIRAdapter.FHIR);
+       // config.setConnector(FHIRAdapter.FHIR);
         //      config.setUser("TCH");
         //config.setUser("ice");
         //config.setUser("stc");
@@ -506,7 +527,9 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
         //               config.setEndPoint("http://tchforecasttester.org/fv/forecast");
         // config.setEndPoint("http://florence.immregistries.org/aart/soap");
-        config.setEndPoint("http://florence.immregistries.org/iis-sandbox/soap");
+       config.setEndPoint("http://florence.immregistries.org/iis-sandbox/soap");
+
+      //  config.setEndPoint("http://florence.immregistries.org/lonestar/fhir/$immds-forecast");
 
         //    config.setEndPoint("https://app.immregistries.org/aart/soap");
         //   config.setEndPoint("http://immlab.pagekite.me/aart/soap");

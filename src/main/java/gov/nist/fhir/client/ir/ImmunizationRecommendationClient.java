@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.http.Header;
+import org.apache.http.HeaderIterator;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NoHttpResponseException;
@@ -340,7 +342,8 @@ public class ImmunizationRecommendationClient {
                     Immunization immunization = it.next();
                     //  org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
                     org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent immunizationParametersParameterFhir = new org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent();
-                    immunizationParametersParameterFhir.setName(Consts.PARAMETER_NAME_IMMUNIZATION);
+                    // TODO: This is now out of sync with Consts because DSTU3 --> R4 changed the case 7/29/2020
+                    immunizationParametersParameterFhir.setName("immunization");
                     // org.hl7.fhir.dstu3.model.Immunization immunizationFhir = new org.hl7.fhir.dstu3.model.Immunization();
                     org.hl7.fhir.r4.model.Immunization immunizationFhir = new org.hl7.fhir.r4.model.Immunization();
 
@@ -543,6 +546,24 @@ public class ImmunizationRecommendationClient {
         }
 
         if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) {
+            
+            HeaderIterator hi = httpResponse.headerIterator();
+            System.out.println("ERROR at HTTP level (non-200):");
+            while(hi.hasNext()) {
+                Header head = hi.nextHeader();
+                System.out.println("Name = " + head.getName() + " Value = " + head.getValue());
+                
+            }
+            String body;
+            try {
+                body = convertStreamToString(httpResponse.getEntity().getContent());
+            } catch (IOException ex) {
+                Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedOperationException ex) {
+                Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+          
             throw new ConnectionException(String.valueOf(httpResponse.getStatusLine().getStatusCode()), httpResponse.getStatusLine().getReasonPhrase());
         }
 
