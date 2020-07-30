@@ -285,10 +285,10 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 FhirContext ctx = FhirContext.forR4();
                 String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
                 response.setResponse(raw);
-                
+
                 return response;
             }
-            
+
             FhirContext ctx = FhirContext.forR4();
             String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(parameters);
             response.setResponse(raw);
@@ -301,13 +301,50 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             } catch (IndexOutOfBoundsException ioobe) {
                 System.out.println("LOG: No immunization information in response.");
             }
-            org.hl7.fhir.r4.model.ImmunizationRecommendation ir = null;
-            if (parameter != null) {
-                ir = (org.hl7.fhir.r4.model.ImmunizationRecommendation) parameter.getResource();
-            }
-            if (ir != null) {
 
-                List<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> irrs = ir.getRecommendation();
+            List<org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent> parametersComp = parameters.getParameter();
+
+            Iterator<org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent> it = parametersComp.iterator();
+            while (it.hasNext()) {
+
+                org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent paramComp = it.next();
+                org.hl7.fhir.r4.model.Resource resource = paramComp.getResource();
+
+                if (resource instanceof org.hl7.fhir.r4.model.ImmunizationEvaluation) {
+                    org.hl7.fhir.r4.model.ImmunizationEvaluation ie = (org.hl7.fhir.r4.model.ImmunizationEvaluation) resource;
+                    ResponseVaccinationEvent rve = TranslationUtils.translateImmunizationEvaluationToResponseVaccinationEventCurrentFhir(ie);
+
+                    response.getEvents().add(rve);
+                 //   System.out.println("PARSED!!!" + rve.getAdministred() + " --- " + rve.getDoseNumber() + rve.getEvaluations().toArray()[0].toString());
+                } else if (resource instanceof org.hl7.fhir.r4.model.ImmunizationRecommendation) {
+                    org.hl7.fhir.r4.model.ImmunizationRecommendation ir = (org.hl7.fhir.r4.model.ImmunizationRecommendation) resource;
+                    
+                    List<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> recComp = ir.getRecommendation();
+                    Iterator<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> itIr = recComp.iterator();
+                    
+                    while(itIr.hasNext()) {
+                        org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irrc = itIr.next();
+                        ActualForecast af = TranslationUtils.translateImmunizationRecommendationRecommendationToActualForecastCurrentFhir(irrc);
+                        if (af != null) {
+                            response.getForecasts().add(af);
+                        //    System.out.println("AF RESPONCE " + af.getSerieStatus() + " " + af.getEarliest());
+                        }
+                        
+                    }
+                    
+                }
+            }
+
+            // END HERE
+            /*
+            
+            org.hl7.fhir.r4.model.ImmunizationEvaluation ie = null;
+            if (parameter != null && ie instanceof org.hl7.fhir.r4.model.ImmunizationEvaluation) {
+                ie = (org.hl7.fhir.r4.model.ImmunizationEvaluation) parameter.getResource();
+            }
+            if (ie != null) {
+                translateImmunizationEvaluationToResponseVaccinationEventCurrentFhir(ie);
+                List<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> irrs = ie.getRecommendation();
                 Iterator<org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent> it = irrs.iterator();
                 while (it.hasNext()) {
                     org.hl7.fhir.r4.model.ImmunizationRecommendation.ImmunizationRecommendationRecommendationComponent irr = it.next();
@@ -337,7 +374,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             } else {
                 System.out.println("LOG: No immunization information in response.");
             }
-
+            
             try {
                 //TODO: Do better than going by order of paramters
                 org.hl7.fhir.r4.model.Parameters.ParametersParameterComponent parameterLog = parameters.getParameter().get(1);
@@ -387,7 +424,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("LOG: No issues.");
             }
-
+             */
         }
         /*
          try {
@@ -516,10 +553,10 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //   config.setConnector(FHIRAdapter.LSVF);
 
         // config.setConnector(FHIRAdapter.SWP);
-            config.setConnector(FHIRAdapter.HL7);
+        //    config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
-       // config.setConnector(FHIRAdapter.FHIR);
+        config.setConnector(FHIRAdapter.FHIR);
         //      config.setUser("TCH");
         //config.setUser("ice");
         //config.setUser("stc");
@@ -527,9 +564,9 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService");
         //               config.setEndPoint("http://tchforecasttester.org/fv/forecast");
         // config.setEndPoint("http://florence.immregistries.org/aart/soap");
-       config.setEndPoint("http://florence.immregistries.org/iis-sandbox/soap");
+        //  config.setEndPoint("http://florence.immregistries.org/iis-sandbox/soap");
 
-      //  config.setEndPoint("http://florence.immregistries.org/lonestar/fhir/$immds-forecast");
+        config.setEndPoint("http://florence.immregistries.org/lonestar/fhir/$immds-forecast");
 
         //    config.setEndPoint("https://app.immregistries.org/aart/soap");
         //   config.setEndPoint("http://immlab.pagekite.me/aart/soap");

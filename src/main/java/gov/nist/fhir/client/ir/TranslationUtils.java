@@ -191,6 +191,11 @@ public class TranslationUtils {
         if(imm.getDate() != null)
             rve.setDate(new FixedDate(imm.getDate()));
         rve.setEvaluations(new HashSet<ActualEvaluation>());
+        
+        if(imm.getDoseNumberPositiveIntType() != null
+                && imm.getDoseNumberPositiveIntType().getValue() != null) {
+            rve.setDoseNumber(imm.getDoseNumberPositiveIntType().getValue());
+        }
 /*
         List<org.hl7.fhir.r4.model.Immunization.ImmunizationProtocolAppliedComponent> vaccinationProtocols = imm.getProtocolApplied();
         Iterator<org.hl7.fhir.r4.model.Immunization.ImmunizationProtocolAppliedComponent> it = vaccinationProtocols.iterator();
@@ -535,8 +540,8 @@ public class TranslationUtils {
         */
         
         ActualForecast af = new ActualForecast();
-        //TODO: Error checking
-        af.setDoseNumber(irr.getDoseNumberStringType().toString());
+        if(irr.getDoseNumberStringType() != null)
+            af.setDoseNumber(irr.getDoseNumberStringType().toString());
         //af.setDoseNumber(Integer.toString(irr.getDoseNumber()));
         VaccineRef vaccineRef = new VaccineRef();
         if (irr.getVaccineCode() != null && irr.getVaccineCode().listIterator() != null
@@ -574,16 +579,19 @@ public class TranslationUtils {
                     //case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_DUE:
 //                        af.setRecommended(date.getDate());
   //                      break;
-                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_EARLIEST:
+                    
+                    //TODO make this Consts
+                    
+                    case "30981-5": //earliest
                         af.setEarliest(date.asDate());
                         break;
-                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_OVERDUE:
+                    case "59778-1": // over due
                         af.setPastDue(date.asDate());
                         break;
-                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_LATEST:
+                    case "59777-3": //latest
                         af.setComplete(date.asDate());
                         break;
-                    case IMMUNIZATION_RECOMMENDATION_DATE_CRITERION_RECOMMENDED:
+                    case "30980-7": // DATE DUE
                         af.setRecommended(date.asDate());
                         break;                    
                 }

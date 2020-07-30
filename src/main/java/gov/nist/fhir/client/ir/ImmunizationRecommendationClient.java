@@ -502,11 +502,13 @@ public class ImmunizationRecommendationClient {
         }
         String outgoingXml = ImmunizationRecommendationClient.generatePayload(routing, sendingConfig, useAdapter, format);
         StringEntity paramsXml = new StringEntity(outgoingXml);
+        /*
         try {
             System.out.println("OUTGOING? " + convertStreamToString(paramsXml.getContent()));
         } catch (IOException ex) {
             Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+        */
         request.addHeader("content-type", "application/xml; charset=utf8");
         request.addHeader("accept", "application/xml");
         request.setEntity(paramsXml);
