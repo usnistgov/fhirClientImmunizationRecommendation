@@ -431,7 +431,7 @@ public class TranslationUtils {
                 && irr.getVaccineCode().getCoding().get(0).getCode() != null) {
             Coding ct = irr.getVaccineCode().getCoding().get(0);
             vaccineRef.setCvx(irr.getVaccineCode().getCoding().get(0).getCode());
-            
+   
         }
         af.setVaccine(vaccineRef);
         
@@ -544,13 +544,14 @@ public class TranslationUtils {
             af.setDoseNumber(irr.getDoseNumberStringType().toString());
         //af.setDoseNumber(Integer.toString(irr.getDoseNumber()));
         VaccineRef vaccineRef = new VaccineRef();
+
         if (irr.getVaccineCode() != null && irr.getVaccineCode().listIterator() != null
                 && irr.getVaccineCode().size() > 0
                 && irr.getVaccineCode().get(0) != null
-                && irr.getVaccineCode().get(0).getText() != null) {
-            org.hl7.fhir.r4.model.CodeableConcept ct = irr.getVaccineCode().get(0);
-            vaccineRef.setCvx(irr.getVaccineCode().get(0).getText());
-            
+                && irr.getVaccineCode().get(0).getCodingFirstRep() != null
+                && irr.getVaccineCode().get(0).getCodingFirstRep().getCode() != null) {
+            vaccineRef.setCvx(irr.getVaccineCode().get(0).getCodingFirstRep().getCode());
+                   
         }
         af.setVaccine(vaccineRef);
         
