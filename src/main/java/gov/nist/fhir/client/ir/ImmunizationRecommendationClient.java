@@ -549,13 +549,9 @@ public class ImmunizationRecommendationClient {
 
         if (!String.valueOf(httpResponse.getStatusLine().getStatusCode()).startsWith("2")) {
             
-            HeaderIterator hi = httpResponse.headerIterator();
-            System.out.println("ERROR at HTTP level (non-200):");
-            while(hi.hasNext()) {
-                Header head = hi.nextHeader();
-                System.out.println("Name = " + head.getName() + " Value = " + head.getValue());
-                
-            }
+            Logger.getLogger(ImmunizationRecommendationClient.class.getName()).log(Level.SEVERE,"ERROR at HTTP level (non-200)");
+            //System.out.println("ERROR at HTTP level (non-200):");
+          
             String body;
             try {
                 body = convertStreamToString(httpResponse.getEntity().getContent());
