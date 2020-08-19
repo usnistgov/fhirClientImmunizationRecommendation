@@ -51,7 +51,8 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
     public EngineResponse run(SoftwareConfig config, TestCasePayLoad tc) throws ConnectionException {
 
         EngineResponse response = new EngineResponse();
-        if (config.getConnector().equals(FHIRAdapter.FHIR)) {
+        if (config.getConnector().equals(FHIRAdapter.FHIR) 
+                || config.getConnector().equals(FHIRAdapter.FHIRDSTU3)) {
             this.setUseAdapter(false);
         } else {
             this.setUseAdapter(true);
@@ -140,11 +141,11 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         } else {
          */
 
-        if (useAdapter) {
+        if (useAdapter || config.getConnector().equals(FHIRAdapter.FHIRDSTU3)) {
 
             org.hl7.fhir.dstu3.model.Parameters parameters = null;
             try {
-                parameters = (org.hl7.fhir.dstu3.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
+                parameters = (org.hl7.fhir.dstu3.model.Parameters) irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML, config.getConnector());
             } catch (IOException ex) {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
             } catch (KeyStoreException ex) {
@@ -265,7 +266,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
                 //               FhirContext ctx = FhirContext.forR4();
                 // String raw = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(bundle);
                 //System.out.println("raw = " + raw);
-                returned = irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML);
+                returned = irc.getImmunizationRecommendation(routing, sendingConfig, useAdapter, FormatEnum.XML, config.getConnector());
                 parameters = (org.hl7.fhir.r4.model.Parameters) returned;
             } catch (IOException ex) {
                 Logger.getLogger(TestRunnerServiceFhirImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -553,11 +554,15 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         //   config.setConnector(FHIRAdapter.LSVF);
 
         // config.setConnector(FHIRAdapter.SWP);
-        //    config.setConnector(FHIRAdapter.HL7);
+            config.setConnector(FHIRAdapter.HL7);
         //  config.setConnector(FHIRAdapter.ICE);
         //config.setConnector(FHIRAdapter.STC);
-        config.setConnector(FHIRAdapter.FHIR);
-        //      config.setUser("TCH");
+    
+        
+//        config.setConnector(FHIRAdapter.FHIR);
+        
+
+//      config.setUser("TCH");
         //config.setUser("ice");
         //config.setUser("stc");
         //    config.setEndPoint("http://testws.swpartners.com/vfmservice/VFMWebService?wsdl");
@@ -566,7 +571,7 @@ public class TestRunnerServiceFhirImpl implements TestRunnerService {
         // config.setEndPoint("http://florence.immregistries.org/aart/soap");
         //  config.setEndPoint("http://florence.immregistries.org/iis-sandbox/soap");
 
-        config.setEndPoint("http://florence.immregistries.org/lonestar/fhir/$immds-forecast");
+  //      config.setEndPoint("http://florence.immregistries.org/lonestar/fhir/$immds-forecast");
 
         //    config.setEndPoint("https://app.immregistries.org/aart/soap");
         //   config.setEndPoint("http://immlab.pagekite.me/aart/soap");

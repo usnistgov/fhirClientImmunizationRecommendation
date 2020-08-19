@@ -8,6 +8,7 @@ package gov.nist.fhir.client.ir;
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.fhir.Consts;
 import gov.nist.healthcare.cds.domain.exception.ConnectionException;
+import gov.nist.healthcare.cds.enumeration.FHIRAdapter;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -57,7 +58,7 @@ public class ImmunizationRecommendationClient {
     public static final String Consts.PARAMETER_NAME_IMMUNIZATION_ADAPTER = "Immunizations";
     public static final String Consts.PARAMETER_NAME_PATIENT = "patient";
      */
-    public static String generatePayload(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format) {
+    public static String generatePayload(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format, FHIRAdapter connector) {
 
         // Parameters parameters = FhirFactory.eINSTANCE.createParameters();
         //Id id = FhirFactory.eINSTANCE.createId();
@@ -101,7 +102,7 @@ public class ImmunizationRecommendationClient {
             patientParameter.setResource(patientRC);
             parameters.getParameter().add(patientParameter);
          */
-        if (useAdapter) {
+        if (useAdapter || connector.equals(FHIRAdapter.FHIRDSTU3)) {
             org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent patientParametersParameterFhir = new org.hl7.fhir.dstu3.model.Parameters.ParametersParameterComponent();
             patientParametersParameterFhir.setName(Consts.PARAMETER_NAME_PATIENT);
             org.hl7.fhir.dstu3.model.Patient patientFhir = new org.hl7.fhir.dstu3.model.Patient();
@@ -282,7 +283,7 @@ public class ImmunizationRecommendationClient {
         }
         parametersFhir.addParameter(assessmentDateParametersParameterFhir);
 
-        if (useAdapter) {
+        if (useAdapter || connector.equals(FHIRAdapter.FHIRDSTU3)) {
             //Adapter uses the old FHIR spec
             Collection<Immunization> immunizations = sendingConfig.getImmunizationData();
             if (immunizations != null) {
@@ -396,13 +397,13 @@ public class ImmunizationRecommendationClient {
         //        xml = seri.it(parameters, "sut.xml");
         //  } else {
         FhirContext ctx = null;
-        if (useAdapter) {
+        if (useAdapter || connector.equals(FHIRAdapter.FHIRDSTU3)) {
             ctx = FhirContext.forDstu3();
         } else {
             ctx = FhirContext.forR4();
         }
 
-        if (useAdapter) {
+        if (useAdapter || connector.equals(FHIRAdapter.FHIRDSTU3)) {
             if (format != null && format.equals(FormatEnum.JSON)) {
                 payload = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(parametersFhir);
             } else {
@@ -491,7 +492,7 @@ public class ImmunizationRecommendationClient {
         return payload;
     }
 
-    private static Response sendImmunizationInformation(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format) throws UnsupportedEncodingException, ConnectionException {
+    private static Response sendImmunizationInformation(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format, FHIRAdapter connector) throws UnsupportedEncodingException, ConnectionException {
 
         Response response = new Response();
         HttpPost request = null;
@@ -500,7 +501,7 @@ public class ImmunizationRecommendationClient {
         } else {
             request = new HttpPost(routing.getForecastUrl());
         }
-        String outgoingXml = ImmunizationRecommendationClient.generatePayload(routing, sendingConfig, useAdapter, format);
+        String outgoingXml = ImmunizationRecommendationClient.generatePayload(routing, sendingConfig, useAdapter, format, connector);
         StringEntity paramsXml = new StringEntity(outgoingXml);
         /*
         try {
@@ -633,9 +634,9 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
 
     }
 
-    public Object getImmunizationRecommendation(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format) throws IOException, UnsupportedEncodingException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ConnectionException {
+    public Object getImmunizationRecommendation(Routing routing, SendingConfig sendingConfig, boolean useAdapter, FormatEnum format, FHIRAdapter connector) throws IOException, UnsupportedEncodingException, KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ConnectionException {
 
-        Response response = ImmunizationRecommendationClient.sendImmunizationInformation(routing, sendingConfig, useAdapter, format);
+        Response response = ImmunizationRecommendationClient.sendImmunizationInformation(routing, sendingConfig, useAdapter, format, connector);
 
         //TODO: This workaround is no longer needed.  Fix it.
         String xml = response.getPayload();
@@ -706,7 +707,7 @@ public static EObject loadEObjectFromString(String myModelXml, EPackage ePackage
         //return recommendations;
 
         //    } else {
-        if (useAdapter) {
+        if (useAdapter || connector.equals(FHIRAdapter.FHIRDSTU3)) {
             FhirContext ctx = FhirContext.forDstu3();
             s1 = ctx.newXmlParser().parseResource(xml);
         } else {
